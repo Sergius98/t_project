@@ -5,14 +5,14 @@
 #include <typeinfo>
 #include <cassert>
 
-bool register_user(std::string args){
-    std::cout << "inside register_user()" << std::endl;
+bool registerUser(std::string args){
+    std::cout << "inside registerUser()" << std::endl;
     std::cout << "args = " << args << std::endl;
 
     return true;
 }
-bool unregister_user(std::string args){
-    std::cout << "inside unregister_user()" << std::endl;
+bool unregisterUser(std::string args){
+    std::cout << "inside unregisterUser()" << std::endl;
     std::cout << "args = " << args << std::endl;
 
     return true;
@@ -23,8 +23,8 @@ bool setName(std::string args){
 
     return true;
 }
-bool call_user(std::string args){
-    std::cout << "inside call_user()" << std::endl;
+bool callUser(std::string args){
+    std::cout << "inside callUser()" << std::endl;
     std::cout << "args = " << args << std::endl;
 
     return true;
@@ -84,10 +84,10 @@ struct UserInterface{
 
 int main(){
     UserInterface ui;
-    ui.insert("register", register_user);
-    ui.insert("unregister", unregister_user);
+    ui.insert("register", registerUser);
+    ui.insert("unregister", unregisterUser);
     ui.insert("setName", setName);
-    ui.insert("call", call_user);
+    ui.insert("call", callUser);
     ui.insert("callEnd", callEnd);
     ui.insert("answer", answer);
     ui.insert("reject", reject);
