@@ -11,14 +11,14 @@ module commutator {
       leaf number { type string; mandatory true; }
       leaf userName { type string; config false; }
       leaf incomingNumber { type string; mandatory true; }
-			leaf state {
-				type enumeration {
-					enum idle;
-					enum busy;
-					enum active;
-				}
-				default "idle";
-			}
+      leaf state {
+        type enumeration {
+          enum idle;
+          enum busy;
+          enum active;
+        }
+        default "idle";
+      }
     }
   }
 }
