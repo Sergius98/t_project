@@ -5,6 +5,8 @@
 #include <typeinfo>
 #include <cassert>
 
+#include <algorithm> 
+
 bool registerUser(std::string args){
     std::cout << "inside registerUser()" << std::endl;
     std::cout << "args = " << args << std::endl;
@@ -49,38 +51,48 @@ bool reject(std::string args){
 }
 
 
-typedef void (*voidFunctionType)(void); 
+typedef bool (*CommandFunctionType)(std::string); 
 
 struct UserInterface{
-    std::map<std::string,std::pair<voidFunctionType,std::type_index>> commands;
+    std::map<std::string,CommandFunctionType> commands;
 
-    template<typename T>
-    void insert(std::string command_key, T function){
-        auto tt = std::type_index(typeid(function));
-        commands.insert(std::make_pair(command_key,
-                        std::make_pair((voidFunctionType)function, tt)));
+    void insert(std::string command_key, CommandFunctionType function){
+        commands.insert(std::make_pair(command_key, function));
     }
 
-    template<typename T>
-    T searchAndCall(std::string command_key, std::string args){
+    bool searchAndCall(std::string command_key, std::string args){
         auto mapIter = commands.find(command_key);
         /*chk if not end*/
         if  (mapIter != commands.end()){
-            auto mapVal = mapIter->second;
+            auto mapFun = mapIter->second;
 
-            // auto typeCastedFun = reinterpret_cast<T(*)(Args ...)>(mapVal.first); 
-            auto typeCastedFun = (T(*)(std::string))(mapVal.first); 
-
-            //compare the types is equal or not
-            assert(mapVal.second == std::type_index(typeid(typeCastedFun)));
-            return typeCastedFun(args);
+            return mapFun(args);
         } else {
             std::cout << "CMD not found" << std::endl;
-            return 0;
+            return false;
         }
     }
 };
 
+// trim from start (in place)
+static inline void ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+        return !std::isspace(ch);
+    }));
+}
+// trim from end (in place)
+static inline void rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
+        return !std::isspace(ch);
+    }).base(), s.end());
+}
+
+// trim from both ends (copy)
+static inline std::string trim(std::string s) {
+    ltrim(s);
+    rtrim(s);
+    return s;
+}
 
 int main(){
     UserInterface ui;
@@ -95,13 +107,18 @@ int main(){
     bool ex_flag = true;
     std::string command, args;
     while (ex_flag){
+        bool success_flag = false;
+
         std::cout << ">";
         std::cin >> command;
         if (command == "exit") {
             ex_flag = false;
         } else {
             getline(std::cin, args);
-            ui.searchAndCall<bool>(command, args);
+            success_flag = ui.searchAndCall(command, trim(args));
+            if (success_flag == false) {
+                std::cout << "CMD failed to execute" << std::endl;
+            }
         }
     }
     return 0;
