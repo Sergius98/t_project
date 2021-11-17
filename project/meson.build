@@ -7,10 +7,7 @@ project(
 )
 
 ex_source_files = [
-    'network_emul.cpp',
-    #'Commands.cpp',
+    'main.cpp'
     ]
-
-#incdir = include_directories('include')
 
 executable('ne_client', sources : [ex_source_files])

@@ -65,14 +65,19 @@ struct UserInterface{
     T searchAndCall(std::string command_key, std::string args){
         auto mapIter = commands.find(command_key);
         /*chk if not end*/
-        auto mapVal = mapIter->second;
+        if  (mapIter != commands.end()){
+            auto mapVal = mapIter->second;
 
-        // auto typeCastedFun = reinterpret_cast<T(*)(Args ...)>(mapVal.first); 
-        auto typeCastedFun = (T(*)(std::string))(mapVal.first); 
+            // auto typeCastedFun = reinterpret_cast<T(*)(Args ...)>(mapVal.first); 
+            auto typeCastedFun = (T(*)(std::string))(mapVal.first); 
 
-        //compare the types is equal or not
-        assert(mapVal.second == std::type_index(typeid(typeCastedFun)));
-        return typeCastedFun(args);
+            //compare the types is equal or not
+            assert(mapVal.second == std::type_index(typeid(typeCastedFun)));
+            return typeCastedFun(args);
+        } else {
+            std::cout << "CMD not found" << std::endl;
+            return 0;
+        }
     }
 };
 
