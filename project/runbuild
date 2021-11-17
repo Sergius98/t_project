@@ -1,0 +1,6 @@
+#!/bin/bash
+#chmod +x ./runbuild 
+rm -rf builddir/
+meson builddir
+ninja -C builddir/
+./builddir/ne_client
