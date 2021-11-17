@@ -1,0 +1,5 @@
+sysrepocfg --import=config-acm.xml --datastore startup --module ietf-netconf-acm
+
+sysrepocfg --import=config-acm.xml --datastore running --module ietf-netconf-acm
+
+sysrepocfg --import=config-acm.xml --datastore candidate --module ietf-netconf-acm
