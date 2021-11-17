@@ -7,14 +7,14 @@
 
 #include <algorithm> 
 
-bool registerUser(std::string args){
-    std::cout << "inside registerUser()" << std::endl;
+bool cmdRegister(std::string args){
+    std::cout << "inside cmdRegister()" << std::endl;
     std::cout << "args = " << args << std::endl;
 
     return true;
 }
-bool unregisterUser(std::string args){
-    std::cout << "inside unregisterUser()" << std::endl;
+bool unregister(std::string args){
+    std::cout << "inside unregister()" << std::endl;
     std::cout << "args = " << args << std::endl;
 
     return true;
@@ -25,8 +25,8 @@ bool setName(std::string args){
 
     return true;
 }
-bool callUser(std::string args){
-    std::cout << "inside callUser()" << std::endl;
+bool call(std::string args){
+    std::cout << "inside call()" << std::endl;
     std::cout << "args = " << args << std::endl;
 
     return true;
@@ -96,10 +96,10 @@ static inline std::string trim(std::string s) {
 
 int main(){
     UserInterface ui;
-    ui.insert("register", registerUser);
-    ui.insert("unregister", unregisterUser);
+    ui.insert("register", cmdRegister);
+    ui.insert("unregister", unregister);
     ui.insert("setName", setName);
-    ui.insert("call", callUser);
+    ui.insert("call", call);
     ui.insert("callEnd", callEnd);
     ui.insert("answer", answer);
     ui.insert("reject", reject);
