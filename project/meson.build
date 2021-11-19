@@ -2,7 +2,7 @@ project(
     'network_emul',
     'cpp',
     default_options : [
-        'cpp_std=c++11'
+        'cpp_std=c++2a'
     ]
 )
 
