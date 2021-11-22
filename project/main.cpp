@@ -7,9 +7,16 @@
 
 #include <algorithm> 
 
+#include "MobileClient/include/NetConfAgent.hpp"
+
 bool cmdRegister(std::string args){
     std::cout << "inside cmdRegister()" << std::endl;
     std::cout << "args = " << args << std::endl;
+
+    NetConfAgent agent;
+
+    agent.init();
+    agent.subscribe();
 
     return true;
 }
