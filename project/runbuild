@@ -5,4 +5,4 @@ set -x
 rm -rf builddir/
 meson builddir
 ninja -C builddir/
-./builddir/ne_client
+sudo ./builddir/ne_client

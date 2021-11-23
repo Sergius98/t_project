@@ -9,13 +9,13 @@
 
 #include "MobileClient/include/NetConfAgent.hpp"
 
+NetConfAgent agent;
+
 bool cmdRegister(std::string args){
     std::cout << "inside cmdRegister()" << std::endl;
     std::cout << "args = " << args << std::endl;
 
-    NetConfAgent agent;
 
-    agent.init();
     agent.subscribe();
 
     return true;
@@ -23,6 +23,7 @@ bool cmdRegister(std::string args){
 bool unregister(std::string args){
     std::cout << "inside unregister()" << std::endl;
     std::cout << "args = " << args << std::endl;
+
 
     return true;
 }
@@ -36,6 +37,8 @@ bool call(std::string args){
     std::cout << "inside call()" << std::endl;
     std::cout << "args = " << args << std::endl;
 
+    agent.testGetData();
+    
     return true;
 }
 bool callEnd(std::string args){
@@ -110,6 +113,8 @@ int main(){
     ui.insert("callEnd", callEnd);
     ui.insert("answer", answer);
     ui.insert("reject", reject);
+
+    agent.init();
 
     bool ex_flag = true;
     std::string command, args;
