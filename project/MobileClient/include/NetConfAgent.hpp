@@ -3,6 +3,7 @@
 
 #include <optional>
 #include <atomic>
+#include <string>
 
 #include <sysrepo-cpp/Connection.hpp>
 #include <sysrepo-cpp/Subscription.hpp>
@@ -11,15 +12,13 @@
 
 class NetConfAgent {
     public:
-        std::atomic<int> called = 0;
-
-        void init();
-        void subscribe();
-        void testGetData();
+        NetConfAgent();
+        bool subscribeForModelChanges();
+        bool fetchData(std::string &str, std::string path);
     private:
-        std::unique_ptr<sysrepo::Connection> conn;
-        std::optional<sysrepo::Session> sess;
-        std::optional<sysrepo::Subscription> sub;
+        std::unique_ptr<sysrepo::Connection> _conn;
+        std::optional<sysrepo::Session> _sess;
+        std::optional<sysrepo::Subscription> _sub;
 };
 
 #endif
