@@ -1,7 +1,5 @@
 #include "NetConfAgent.hpp"
 
-#include <iostream>
-#include <libyang-cpp/DataNode.hpp>
 
 
 NetConfAgent::NetConfAgent(){
@@ -27,31 +25,20 @@ bool NetConfAgent::subscribeForModelChanges(){
         std::cout.flush(); 
         return sysrepo::ErrorCode::Ok;
     };
-    try {
-        _sub = _sess->onModuleChange("testmodel",
-                                    moduleChangeCb, 
-                                    nullptr, 
-                                    0, 
-                                    sysrepo::SubscribeOptions::DoneOnly
-        );
-    } catch (const std::exception& e) {
-        _sub = std::nullopt;
-        std::cout << "SUBSCRIBE ON MODULE CHANGE FAILED"<< std::endl;
-        std::cout << e.what() << std::endl;
-        return false;
-    }
+    _sub = _sess->onModuleChange("testmodel",
+                                moduleChangeCb, 
+                                nullptr, 
+                                0, 
+                                sysrepo::SubscribeOptions::DoneOnly
+    );
+    
     return true;
 }
 
 
 bool NetConfAgent::fetchData(std::string &data_str, std::string path){
     std::optional<libyang::DataNode> data;
-    try{
-        data = _sess->getData(path.c_str());
-    } catch (const std::exception& e) {
-        std::cout << "GET DATA FAILED"<< std::endl;
-        std::cout << e.what() << std::endl;
-    }
+    data = _sess->getData(path.c_str());
     if (data.has_value()){
         auto data_node = data->findPath(path.c_str());
         if (data_node.has_value()){
