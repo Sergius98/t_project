@@ -7,57 +7,125 @@
 
 #include <algorithm> 
 
-#include "MobileClient/include/NetConfAgent.hpp"
+#include <vector> 
+
+#include "NetConfAgent.hpp"
 
 NetConfAgent agent;
 
-bool cmdRegister(std::string args){
-    std::cout << "inside cmdRegister()" << std::endl;
-    std::cout << "args = " << args << std::endl;
 
+std::vector<std::string> splitArgs (std::string raw_args){
+    std::vector<std::string> args_vector;
+    std::istringstream ss(raw_args);
+    std::string word;
+    while (ss >> word){
+        args_vector.push_back(word);
+    }
+    return args_vector;
+}
+
+
+bool getArgs(long unsigned int num, std::string raw_args, std::vector<std::string> *args = nullptr){
+    std::vector<std::string> args_vector = splitArgs(raw_args);
+    if (args_vector.size() != num) {
+        std::cout << "function expects " << num << 
+            "args, but only " << args_vector.size() << " was passed" << std::endl;
+        return false;
+    }
+    if (args != nullptr){
+        *args = args_vector;
+    }
+    return true;
+}
+
+
+// register name number
+bool cmdRegister(std::string raw_args){
+    std::vector<std::string> args_vector;
+    std::cout << "inside cmdRegister()" << std::endl;
+    if (getArgs(2, raw_args, &args_vector) == false){
+        std::cout << "raw_args =>>" << raw_args << "<<" << std::endl;
+        std::cout << "wrong number of arguments" << std::endl;
+        return false;
+    }
+    std::cout << "args_vector:" << std::endl;
+    for (auto arg: args_vector)
+        std::cout << ">>" << arg << "<<" << std::endl;
 
     agent.subscribeForModelChanges();
 
     return true;
 }
-bool unregister(std::string args){
+
+// unregister
+bool unregister(std::string raw_args){
     std::cout << "inside unregister()" << std::endl;
-    std::cout << "args = " << args << std::endl;
-
-
+    if (getArgs(0, raw_args) == false){
+        std::cout << "wrong number of arguments" << std::endl;
+        return false;
+    }
     return true;
 }
-bool setName(std::string args){
+// setName name
+bool setName(std::string raw_args){
+    std::vector<std::string> args_vector;
     std::cout << "inside setName()" << std::endl;
-    std::cout << "args = " << args << std::endl;
+    if (getArgs(1, raw_args, &args_vector) == false){
+        std::cout << "wrong number of arguments" << std::endl;
+        return false;
+    }
 
     return true;
 }
-bool call(std::string args){
-    std::cout << "inside call()" << std::endl;
-    std::cout << "args = " << args << std::endl;
 
+// call number
+bool call(std::string raw_args){
+    std::vector<std::string> args_vector;
+    std::cout << "inside call()" << std::endl;
+    if (getArgs(1, raw_args, &args_vector) == false){
+        std::cout << "wrong number of arguments" << std::endl;
+        return false;
+    }
+
+    if (args_vector[0] == "aaa"){
+        args_vector[0] = "/testmodel:sports/person[name='Mike']/name";
+    }
     std::string str;
-    agent.fetchData(str, "/testmodel:sports/person[name='Mike']/name");
+    agent.fetchData(str, args_vector[0]);
     std::cout << "str = " << str << std::endl;
 
     return true;
 }
-bool callEnd(std::string args){
+
+// callEnd
+bool callEnd(std::string raw_args){
     std::cout << "inside callEnd()" << std::endl;
-    std::cout << "args = " << args << std::endl;
+    if (getArgs(0, raw_args) == false){
+        std::cout << "wrong number of arguments" << std::endl;
+        return false;
+    }
 
     return true;
 }
-bool answer(std::string args){
+
+// answer
+bool answer(std::string raw_args){
     std::cout << "inside answer()" << std::endl;
-    std::cout << "args = " << args << std::endl;
+    if (getArgs(0, raw_args) == false){
+        std::cout << "wrong number of arguments" << std::endl;
+        return false;
+    }
 
     return true;
 }
-bool reject(std::string args){
+
+// reject
+bool reject(std::string raw_args){
     std::cout << "inside reject()" << std::endl;
-    std::cout << "args = " << args << std::endl;
+    if (getArgs(0, raw_args) == false){
+        std::cout << "wrong number of arguments" << std::endl;
+        return false;
+    }
 
     return true;
 }
@@ -86,25 +154,6 @@ struct UserInterface{
     }
 };
 
-// trim from start (in place)
-static inline void ltrim(std::string &s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
-        return !std::isspace(ch);
-    }));
-}
-// trim from end (in place)
-static inline void rtrim(std::string &s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
-        return !std::isspace(ch);
-    }).base(), s.end());
-}
-
-// trim from both ends (copy)
-static inline std::string trim(std::string s) {
-    ltrim(s);
-    rtrim(s);
-    return s;
-}
 
 int main(){
     UserInterface ui;
@@ -127,7 +176,7 @@ int main(){
             ex_flag = false;
         } else {
             getline(std::cin, args);
-            success_flag = ui.searchAndCall(command, trim(args));
+            success_flag = ui.searchAndCall(command, args);
             if (success_flag == false) {
                 std::cout << "CMD failed to execute" << std::endl;
             }

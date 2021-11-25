@@ -1,4 +1,4 @@
-#include "../include/NetConfAgent.hpp"
+#include "NetConfAgent.hpp"
 
 #include <iostream>
 #include <libyang-cpp/DataNode.hpp>
