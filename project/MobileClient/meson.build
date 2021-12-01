@@ -1,9 +1,10 @@
 
 MobileClient_files = [
     'source/NetConfAgent.cpp',
+    'source/MobileClient.cpp',
     ]
 
-MobileClient_include = include_directories('include')
+MobileClient_include = include_directories('hpp')
 
 
 libpcre = dependency('libpcre', required : true)
@@ -25,4 +26,4 @@ MobileClient_lib_dep = [
         link_with : [MobileClient_lib],
         include_directories : [MobileClient_include]
     )
-] + MobileClient_dependencies # otherwise it sometimes misses DSO for sysrepo-cpp/Connections
+] #+ MobileClient_dependencies # otherwise it sometimes misses DSO for sysrepo-cpp/Connections

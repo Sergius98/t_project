@@ -91,7 +91,7 @@ bool call(std::string raw_args){
         args_vector[0] = "/testmodel:sports/person[name='Mike']/name";
     }
     std::string str;
-    agent.fetchData(str, args_vector[0]);
+    agent.fetchData(args_vector[0], str);
     std::cout << "str = " << str << std::endl;
 
     return true;
@@ -154,7 +154,45 @@ struct UserInterface{
     }
 };
 
-
+bool regOpData(std::string raw_args){
+    std::vector<std::string> args_vector;
+    if (getArgs(3, raw_args, &args_vector) == false){
+        if (getArgs(2, raw_args, &args_vector) == false){
+            std::cout << "wrong number of arguments" << std::endl;
+            return false;
+        } else {
+            agent.registerOperData("commutator", args_vector[0], args_vector[0], args_vector[1]);
+        }
+    } else {
+        agent.registerOperData("commutator", args_vector[0], args_vector[1], args_vector[2]); 
+    }
+    std::cout<<"Success"<<std::endl;
+    return true;
+}
+bool fetchData(std::string raw_args){
+    std::vector<std::string> args_vector;
+    std::string value;
+    if (getArgs(1, raw_args, &args_vector) == false){
+        std::cout << "wrong number of arguments" << std::endl;
+        return false;
+    } else {
+        agent.fetchData(args_vector[0], value); 
+        std::cout << "value: " << value << std::endl;
+    }
+    return true;
+}
+bool changeData(std::string raw_args){
+    std::vector<std::string> args_vector;
+    std::string value;
+    if (getArgs(2, raw_args, &args_vector) == false){
+        std::cout << "wrong number of arguments" << std::endl;
+        return false;
+    } else {
+        agent.changeData(args_vector[0], args_vector[1]); 
+        std::cout << "value: " << value << std::endl;
+    }
+    return true;
+}
 int main(){
     UserInterface ui;
     ui.insert("register", cmdRegister);
@@ -164,6 +202,13 @@ int main(){
     ui.insert("callEnd", callEnd);
     ui.insert("answer", answer);
     ui.insert("reject", reject);
+
+
+    ui.insert("reg", regOpData);
+    ui.insert("fetch", fetchData);
+    ui.insert("change", changeData);
+
+
 
     bool ex_flag = true;
     std::string command, args;
