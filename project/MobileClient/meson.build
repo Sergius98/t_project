@@ -18,7 +18,7 @@ MobileClient_lib = shared_library(
     'MobileClient',
     sources : [MobileClient_files],
     include_directories : [MobileClient_include],
-    dependencies : [MobileClient_dependencies]
+    dependencies : [MobileClient_dependencies, utils_lib_dep]
 )
 
 MobileClient_lib_dep = [

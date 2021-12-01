@@ -8,9 +8,9 @@ module commutator {
     list subscriber {
       key number;
       
-      leaf number { type string; mandatory true; }
+      leaf number { type string; }
       leaf userName { type string; config false; }
-      leaf incomingNumber { type string; mandatory true; }
+      leaf incomingNumber { type string; }
       leaf state {
         type enumeration {
           enum idle;

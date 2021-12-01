@@ -1,0 +1,64 @@
+sudo sysrepoctl -i model.yang - встановлення моделі 
+sudo sysrepoctl -l - показ всіх встановлених моделей
+
+1. Запускаємо нетопір сервер в новому терміналі:
+
+sudo netopeer2-server -d -v4
+
+2. Запускаємо cli і конектимся до сервера:
+
+netopeer2-cli
+
+connect
+
+3.Перегляд даних:
+
+> get --filter-xpath=/testmodel:*
+
+де o-ran-usermgmt - назва моделі
+
+4. Щоб змінити дані у VIM режимі
+
+> user-rpc
+
+тут вставляємо xml з даною, яку хочемо змінити, приклад для створення(зміни) і видалення:
+
+reg /commutator:subscribers/subscriber[number='111']/userName Kent
+reg /commutator:subscribers/subscriber[number='111']/* /commutator:subscribers/subscriber[number='111']/userName Kent
+
+change /commutator:subscribers/subscriber[number='111']/incomingNumber 111
+
+fetch /commutator:subscribers/subscriber[number='111']/incomingNumber
+fetch /commutator:subscribers/subscriber[number='111']/userName
+
+<edit-config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:xc="urn:ietf:params:xml:ns:netconf:base:1.0">
+    <target>
+      <running/>
+    </target>
+    <error-option>rollback-on-error</error-option>
+    <config>
+      <subscribers xmlns="commutator">
+        <subscriber>
+          <number>111</number>
+          <incomingNumber>45</incomingNumber>
+        </subscriber>
+      </subscribers>
+    </config>
+  </edit-config>
+
+<edit-config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:xc="urn:ietf:params:xml:ns:netconf:base:1.0">
+    <target>
+      <running/>
+    </target>
+    <error-option>rollback-on-error</error-option>
+    <config>
+      <sports xmlns="testmodel">
+        <person xc:operation="delete">
+          <name>Jordon</name>
+        </person>
+      </sports>
+    </config>
+  </edit-config>
+
+
+> get --filter-xpath=/commutator:* - перевірити зміни

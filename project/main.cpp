@@ -10,8 +10,13 @@
 #include <vector> 
 
 #include "NetConfAgent.hpp"
+#include "PrintInterface.hpp"
+#include "StringInterface.hpp"
 
-NetConfAgent agent;
+
+StringInterface si;
+PrintInterface pi;
+NetConfAgent agent(pi);
 
 
 std::vector<std::string> splitArgs (std::string raw_args){
@@ -28,8 +33,9 @@ std::vector<std::string> splitArgs (std::string raw_args){
 bool getArgs(long unsigned int num, std::string raw_args, std::vector<std::string> *args = nullptr){
     std::vector<std::string> args_vector = splitArgs(raw_args);
     if (args_vector.size() != num) {
-        std::cout << "function expects " << num << 
-            "args, but only " << args_vector.size() << " was passed" << std::endl;
+        pi.println(si.format("function expects {} args, but only {} was passed", {num, args_vector.size()}));
+        //std::cout << "function expects " << num << 
+        //    "args, but only " << args_vector.size() << " was passed" << std::endl;
         return false;
     }
     if (args != nullptr){
@@ -130,7 +136,6 @@ bool reject(std::string raw_args){
     return true;
 }
 
-
 typedef bool (*CommandFunctionType)(std::string); 
 
 struct UserInterface{
@@ -215,7 +220,8 @@ int main(){
     while (ex_flag){
         bool success_flag = false;
 
-        std::cout << ">";
+        pi.printInputPointer();
+        //std::cout << ">";
         std::cin >> command;
         if (command == "exit") {
             ex_flag = false;
@@ -223,7 +229,8 @@ int main(){
             getline(std::cin, args);
             success_flag = ui.searchAndCall(command, args);
             if (success_flag == false) {
-                std::cout << "CMD failed to execute" << std::endl;
+                pi.println("CMD failed to execute");
+                //std::cout << "CMD failed to execute" << std::endl;
             }
         }
     }

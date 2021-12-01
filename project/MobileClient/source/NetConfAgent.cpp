@@ -3,6 +3,18 @@
 
 
 NetConfAgent::NetConfAgent(){
+    init();
+}
+NetConfAgent::NetConfAgent(PrintInterface printInterface){
+    NetConfAgent();
+    setPrintingInterface(printInterface);
+}
+
+void NetConfAgent::setPrintingInterface(PrintInterface printInterface){
+    _printInterface = printInterface;
+}
+
+void NetConfAgent::init(){
     _conn = std::make_unique<sysrepo::Connection>();
     _sess = _conn->sessionStart();
     _sess->switchDatastore(sysrepo::Datastore::Operational);
@@ -11,8 +23,16 @@ NetConfAgent::NetConfAgent(){
     */
 }
 
+void NetConfAgent::closeSysrepo(){
+    _subOperData.reset();
+    _subModuleChange.reset();
+    _sess.reset();
+    _conn.reset();
+}
+
 
 void NetConfAgent::registerOperData(std::string moduleName, std::string xPath, std::string &nodePath, std::string &value) {
+    _subOperData.reset();
     sysrepo::OperGetItemsCb operGetCb = [&] (sysrepo::Session session, auto, auto, auto, auto, auto, std::optional<libyang::DataNode>& parent) {
         std::cout << std::endl << "operGetCb():" << std::endl;
         parent = session.getContext().newPath(nodePath.c_str(), value.c_str());
@@ -23,17 +43,15 @@ void NetConfAgent::registerOperData(std::string moduleName, std::string xPath, s
 
 // std::string path
 bool NetConfAgent::subscribeForModelChanges(){
+    _subModuleChange.reset();
     sysrepo::ModuleChangeCb moduleChangeCb = [this] (sysrepo::Session session, auto, auto, auto, auto, auto) -> sysrepo::ErrorCode {
         std::cout << std::endl << "sess->getChanges():" << std::endl;
         for (auto change: session.getChanges("//.")){
-            std::cout << "operation==Created: " << (change.operation == sysrepo::ChangeOperation::Created) << std::endl;
-            std::cout << "operation==Modified: " << (change.operation == sysrepo::ChangeOperation::Modified) << std::endl;
-            std::cout << "operation==Deleted: " << (change.operation == sysrepo::ChangeOperation::Deleted) << std::endl;
-            std::cout << "operation==Moved: " << (change.operation == sysrepo::ChangeOperation::Moved) << std::endl;
-            std::cout << "node: " << change.node.path() << std::endl;
-            std::cout << "previousValue: " << change.previousValue.value_or("empty") << std::endl;
-            std::cout << "previousList: " << change.previousList.value_or("empty") << std::endl;
-            std::cout << "previousDefault: " << change.previousDefault << std::endl;
+            if (change.operation == sysrepo::ChangeOperation::Created || change.operation == sysrepo::ChangeOperation::Modified){
+                if (change.node.schema().nodeType() == libyang::NodeType::Leaf){
+
+                }
+            }
         }
         std::cout << ">"; 
         std::cout.flush(); 
