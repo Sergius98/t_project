@@ -9,14 +9,16 @@
 
 #include <vector> 
 
+#include "MobileClient.hpp"
 #include "NetConfAgent.hpp"
 #include "PrintInterface.hpp"
 #include "StringInterface.hpp"
 
 
-StringInterface si;
-PrintInterface pi;
-NetConfAgent agent(pi);
+extern PrintInterface prInt;
+extern StringInterface strInt;
+
+MobileClient client;
 
 
 std::vector<std::string> splitArgs (std::string raw_args){
@@ -31,9 +33,13 @@ std::vector<std::string> splitArgs (std::string raw_args){
 
 
 bool getArgs(long unsigned int num, std::string raw_args, std::vector<std::string> *args = nullptr){
+    if ((args == nullptr)&&(num != 0)){
+        prInt.logln("function expects a vector for the requested arguments");
+        throw "you need to pass a container for the args";
+    }
     std::vector<std::string> args_vector = splitArgs(raw_args);
     if (args_vector.size() != num) {
-        pi.println(si.format("function expects {} args, but only {} was passed", {num, args_vector.size()}));
+        prInt.println(strInt.format("function expects {} args, but only {} was passed", {num, args_vector.size()}));
         //std::cout << "function expects " << num << 
         //    "args, but only " << args_vector.size() << " was passed" << std::endl;
         return false;
@@ -47,37 +53,30 @@ bool getArgs(long unsigned int num, std::string raw_args, std::vector<std::strin
 
 // register name number
 bool cmdRegister(std::string raw_args){
+    prInt.logln("inside cmdRegister()");
     std::vector<std::string> args_vector;
-    std::cout << "inside cmdRegister()" << std::endl;
-    if (getArgs(2, raw_args, &args_vector) == false){
-        std::cout << "raw_args =>>" << raw_args << "<<" << std::endl;
-        std::cout << "wrong number of arguments" << std::endl;
+    if (getArgs(1, raw_args, &args_vector) == false){
         return false;
     }
-    std::cout << "args_vector:" << std::endl;
-    for (auto arg: args_vector)
-        std::cout << ">>" << arg << "<<" << std::endl;
-
-    agent.subscribeForModelChanges();
+    client.reg(args_vector[0]);
+    //agent.subscribeForModelChanges();
 
     return true;
 }
 
 // unregister
 bool unregister(std::string raw_args){
-    std::cout << "inside unregister()" << std::endl;
+    prInt.logln("inside unregister()");
     if (getArgs(0, raw_args) == false){
-        std::cout << "wrong number of arguments" << std::endl;
         return false;
     }
     return true;
 }
 // setName name
 bool setName(std::string raw_args){
+    prInt.logln("inside setName()");
     std::vector<std::string> args_vector;
-    std::cout << "inside setName()" << std::endl;
     if (getArgs(1, raw_args, &args_vector) == false){
-        std::cout << "wrong number of arguments" << std::endl;
         return false;
     }
 
@@ -86,28 +85,20 @@ bool setName(std::string raw_args){
 
 // call number
 bool call(std::string raw_args){
+    prInt.logln("inside call()");
+
     std::vector<std::string> args_vector;
-    std::cout << "inside call()" << std::endl;
     if (getArgs(1, raw_args, &args_vector) == false){
-        std::cout << "wrong number of arguments" << std::endl;
         return false;
     }
-
-    if (args_vector[0] == "aaa"){
-        args_vector[0] = "/testmodel:sports/person[name='Mike']/name";
-    }
-    std::string str;
-    agent.fetchData(args_vector[0], str);
-    std::cout << "str = " << str << std::endl;
 
     return true;
 }
 
 // callEnd
 bool callEnd(std::string raw_args){
-    std::cout << "inside callEnd()" << std::endl;
+    prInt.logln("inside callEnd()");
     if (getArgs(0, raw_args) == false){
-        std::cout << "wrong number of arguments" << std::endl;
         return false;
     }
 
@@ -116,9 +107,8 @@ bool callEnd(std::string raw_args){
 
 // answer
 bool answer(std::string raw_args){
-    std::cout << "inside answer()" << std::endl;
+    prInt.logln("inside answer()");
     if (getArgs(0, raw_args) == false){
-        std::cout << "wrong number of arguments" << std::endl;
         return false;
     }
 
@@ -127,9 +117,8 @@ bool answer(std::string raw_args){
 
 // reject
 bool reject(std::string raw_args){
-    std::cout << "inside reject()" << std::endl;
+    prInt.logln("inside reject()");
     if (getArgs(0, raw_args) == false){
-        std::cout << "wrong number of arguments" << std::endl;
         return false;
     }
 
@@ -153,36 +142,24 @@ struct UserInterface{
 
             return mapFun(args);
         } else {
-            std::cout << "CMD not found" << std::endl;
+            prInt.println("CMD not found");
+            //std::cout << "CMD not found" << std::endl;
             return false;
         }
     }
 };
 
-bool regOpData(std::string raw_args){
-    std::vector<std::string> args_vector;
-    if (getArgs(3, raw_args, &args_vector) == false){
-        if (getArgs(2, raw_args, &args_vector) == false){
-            std::cout << "wrong number of arguments" << std::endl;
-            return false;
-        } else {
-            agent.registerOperData("commutator", args_vector[0], args_vector[0], args_vector[1]);
-        }
-    } else {
-        agent.registerOperData("commutator", args_vector[0], args_vector[1], args_vector[2]); 
-    }
-    std::cout<<"Success"<<std::endl;
-    return true;
-}
+/******/
+//delete later
 bool fetchData(std::string raw_args){
     std::vector<std::string> args_vector;
     std::string value;
     if (getArgs(1, raw_args, &args_vector) == false){
-        std::cout << "wrong number of arguments" << std::endl;
+        prInt.println("wrong number of arguments");
         return false;
     } else {
-        agent.fetchData(args_vector[0], value); 
-        std::cout << "value: " << value << std::endl;
+        client.fetchData(args_vector[0], value); 
+        prInt.logln({"value:", value});
     }
     return true;
 }
@@ -190,15 +167,21 @@ bool changeData(std::string raw_args){
     std::vector<std::string> args_vector;
     std::string value;
     if (getArgs(2, raw_args, &args_vector) == false){
-        std::cout << "wrong number of arguments" << std::endl;
+        prInt.println("wrong number of arguments");
         return false;
     } else {
-        agent.changeData(args_vector[0], args_vector[1]); 
-        std::cout << "value: " << value << std::endl;
+        client.changeData(args_vector[0], args_vector[1]); 
+        client.fetchData(args_vector[0], value); 
+        prInt.logln({"value:", value});
     }
     return true;
 }
+/******/
 int main(){
+
+    prInt.setLog(true);
+
+
     UserInterface ui;
     ui.insert("register", cmdRegister);
     ui.insert("unregister", unregister);
@@ -209,9 +192,11 @@ int main(){
     ui.insert("reject", reject);
 
 
-    ui.insert("reg", regOpData);
+    /******/
+    //delete later
     ui.insert("fetch", fetchData);
     ui.insert("change", changeData);
+    /******/
 
 
 
@@ -220,7 +205,7 @@ int main(){
     while (ex_flag){
         bool success_flag = false;
 
-        pi.printInputPointer();
+        prInt.printInputPointer();
         //std::cout << ">";
         std::cin >> command;
         if (command == "exit") {
@@ -229,7 +214,7 @@ int main(){
             getline(std::cin, args);
             success_flag = ui.searchAndCall(command, args);
             if (success_flag == false) {
-                pi.println("CMD failed to execute");
+                prInt.println("CMD failed to execute");
                 //std::cout << "CMD failed to execute" << std::endl;
             }
         }

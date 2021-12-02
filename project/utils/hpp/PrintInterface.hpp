@@ -4,16 +4,20 @@
 #include <string>
 #include <iostream>
 #include <list>
+
+
 class PrintInterface{
     public:
-        PrintInterface();
-        PrintInterface(bool logging);
+        static PrintInterface getDefault();
+        
         void printInputPointer();
         void logInputPointer();
         void flushOutput();
         void flushLog();
         void println(std::string str);
+        void println(std::list<std::string> lst);
         void logln(std::string str);
+        void logln(std::list<std::string> lst);
         void print(std::string str);
         void print(std::list<std::string> lst);
         void log(std::string str);

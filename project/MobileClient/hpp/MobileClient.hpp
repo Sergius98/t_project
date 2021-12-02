@@ -1,10 +1,19 @@
+#ifndef MOBILECLIENT_HPP
+#define MOBILECLIENT_HPP
+
 #include <map>
 #include <iostream>
 #include <string>
+#include <memory>
+#include <string>
+
+#include "PrintInterface.hpp"
+#include "StringInterface.hpp"
+extern PrintInterface prInt;
+extern StringInterface strInt;
 
 
-#include "NetConfAgent.hpp"
-
+class NetConfAgent;
 
 enum class State {
     idle,
@@ -12,7 +21,7 @@ enum class State {
     busy,
     active
 };
-std::map<State, std::string> states = {
+const std::map<State, std::string> states = {
     { State::idle, "idle" },
     { State::idleReg, "idle" },
     { State::busy, "busy" },
@@ -20,37 +29,50 @@ std::map<State, std::string> states = {
 };
 
 enum class Leaf {
+    none=0,
     number,
     userName,
     incomingNumber,
     state,
-    subscriber
+    all
 };
-std::map<Leaf, std::string> leafs = {
-    { Leaf::number, "number" },
-    { Leaf::userName, "userName" },
-    { Leaf::incomingNumber, "incomingNumber" },
-    { Leaf::state, "state" },
-    { Leaf::subscriber, "subscriber" }
+const std::map<Leaf, std::string> leafs = {
+    { Leaf::number, "/number" },
+    { Leaf::userName, "/userName" },
+    { Leaf::incomingNumber, "/incomingNumber" },
+    { Leaf::state, "/state" },
+    { Leaf::all, "/*" },
+    { Leaf::none, "" }
 };
 
 
-std::string _module_name = "commutator";
-std::string _container_path = "subscribers/subscriber";
-std::string _key_name = "number";
+const std::string module_name = "commutator";
+const std::string container_path = "subscribers/subscriber";
+const std::string key_name = "number";
+const std::string leafPathPattern = "/{}:{}[{}='{}']{}";
 
 class MobileClient {
     public:
         MobileClient();
-        void setName(std::string &name);
-        bool reg(std::string &number);
-        void setState(State &state);
+        void setName(std::string name);
+        std::string getName();
+        bool reg(std::string number);
+        void setState(State state);
+        std::string getPath();
+        void handleModuleChange(std::string path, std::string value);
+
+        /*****/
+        // delete later
+        bool fetchData(std::string path, std::string &str);
+        bool changeData(std::string path, std::string value);
+        /*****/
     private:
-        std::string makePath(Leaf node);
+        std::string makePath(std::string key, Leaf leaf);
         std::string _name;
         std::string _number;
         std::string _incomingNumber;
-        State _state;
-        std::unique_ptr<NetConfAgent> _netConf;
-        const std::string _leafPathPattern = "/{}:{}[{}='{}']/{}";
+        State _state = State::idle;
+        std::unique_ptr<NetConfAgent> _agent;
 };
+
+#endif

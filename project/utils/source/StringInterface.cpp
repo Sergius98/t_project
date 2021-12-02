@@ -1,5 +1,12 @@
 #include "StringInterface.hpp"
 
+StringInterface strInt = StringInterface::getDefault();
+
+
+StringInterface StringInterface::getDefault(){
+    static StringInterface defaultStringInterface;
+    return defaultStringInterface;
+}
 std::string StringInterface::format(std::string format_str, std::list<std::string> values){
     return format(format_str, _formater, values);
 }

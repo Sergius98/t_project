@@ -26,7 +26,8 @@ connect
 reg /commutator:subscribers/subscriber[number='111']/userName Kent
 reg /commutator:subscribers/subscriber[number='111']/* /commutator:subscribers/subscriber[number='111']/userName Kent
 
-change /commutator:subscribers/subscriber[number='111']/incomingNumber 111
+change /commutator:subscribers/subscriber[number='1211']/incomingNumber 1131
+change /commutator:subscribers/subscriber[number='111']/incomingNumber 1131
 
 fetch /commutator:subscribers/subscriber[number='111']/incomingNumber
 fetch /commutator:subscribers/subscriber[number='111']/userName

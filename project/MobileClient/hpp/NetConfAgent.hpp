@@ -13,16 +13,19 @@
 #include <sysrepo-cpp/utils/exception.hpp>
 
 #include "PrintInterface.hpp"
+#include "StringInterface.hpp"
 
+class MobileClient;
+
+extern PrintInterface prInt;
+extern StringInterface strInt;
 
 class NetConfAgent {
     public:
         NetConfAgent();
-        NetConfAgent(PrintInterface printInterface);
         void init();
-        void setPrintingInterface(PrintInterface printInterface);
         void closeSysrepo();
-        bool subscribeForModelChanges();
+        bool subscribeForModelChanges(std::string path, MobileClient *mobileClient);
         bool fetchData(std::string path, std::string &str);
         void registerOperData(std::string moduleName, std::string xPath, std::string &nodePath, std::string &value);
         bool changeData(std::string path, std::string value);
@@ -31,8 +34,6 @@ class NetConfAgent {
         std::optional<sysrepo::Session> _sess;
         std::optional<sysrepo::Subscription> _subModuleChange;
         std::optional<sysrepo::Subscription> _subOperData;
-
-        std::optional<PrintInterface> _printInterface;
 };
 
 #endif
