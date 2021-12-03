@@ -51,13 +51,13 @@ bool MobileClient::call(std::string destination_number) {
     std::string destination_state_path = makePath(destination_number, Leaf::state);
     std::string source_state = "";
     std::string destination_state = "";
+    std::string idle_state = states.find(State::idle)->second;
     std::string active_state = states.find(State::active)->second;
 
     if (_state == State::idleReg){
         if (_agent->fetchData(destination_state_path, destination_state)){
-            if (destination_state != states.find(State::idle)->second}){
-                _number = number;
-                // todo: multithreading conflict
+            if (destination_state != idle_state}){
+                // todo: resolve multithreading conflict
                 _agent->changeData(destination_state_path, active_state);
                 _agent->changeData(source_state_path, active_state);
                 setState(State::active);
@@ -70,6 +70,33 @@ bool MobileClient::call(std::string destination_number) {
         }
     } else {
         prInt.println({"you need to be idle and registered, but your state is: ", states.find(_state)->second});
+    }
+    return false;
+}
+
+bool MobileClient::accept() {
+    std::string source_incomingNumber_path = makePath(_number, Leaf::incomingNumber);
+    std::string source_state_path = makePath(_number, Leaf::state);
+    std::string destination_state_path = "";
+    std::string source_state = "";
+    std::string source_incomingNumber = "";
+    std::string destination_state = "";
+    std::string idle_state = states.find(State::idle)->second;
+    std::string busy_state = states.find(State::busy)->second;
+
+    if (_state == State::active){
+        if (_incomingNumber!=""){
+            destination_state_path = makePath(_incomingNumber, Leaf::state);
+            
+            _agent->changeData(destination_state_path, busy_state);
+            _agent->changeData(source_state_path, busy_state);
+            setState(State::active);
+            return true;
+        } else {
+            prInt.println("your doesn't have an incoming call");
+        }
+    } else {
+        prInt.println({"you need to be active to accept a call, but your state is: ", states.find(_state)->second});
     }
     return false;
 }

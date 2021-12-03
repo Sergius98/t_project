@@ -70,9 +70,9 @@ class MobileClient {
         /*****/
     private:
         std::string makePath(std::string key, Leaf leaf);
-        std::string _name;
-        std::string _number;
-        std::string _incomingNumber;
+        std::string _name = "";
+        std::string _number = "";
+        std::string _incomingNumber = "";
         State _state = State::idle;
         std::unique_ptr<NetConfAgent> _agent;
 };
