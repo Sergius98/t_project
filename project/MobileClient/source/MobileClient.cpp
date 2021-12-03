@@ -74,7 +74,7 @@ bool MobileClient::call(std::string destination_number) {
     return false;
 }
 
-bool MobileClient::accept() {
+bool MobileClient::answer() {
     std::string source_state_path = makePath(_number, Leaf::state);
     std::string destination_state_path = "";
     std::string busy_state = states.find(State::busy)->second;
@@ -133,7 +133,7 @@ bool MobileClient::endCall() {
             setState(State::idleReg);
             return true;
         } else {
-            prInt.println("you doesn't have an incoming call");
+            prInt.println("you doesn't have an ongoing call");
         }
     } else {
         prInt.println({"you need to be busy to end a call, but your state is: ", states.find(_state)->second});

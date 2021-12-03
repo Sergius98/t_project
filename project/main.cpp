@@ -93,6 +93,12 @@ bool call(std::string raw_args){
         return false;
     }
 
+    if (!client.call(args_vector[0])){
+        return false;
+    }
+
+    prInt.println("the number is called");
+
     return true;
 }
 
@@ -102,6 +108,12 @@ bool callEnd(std::string raw_args){
     if (getArgs(0, raw_args) == false){
         return false;
     }
+
+    if (!client.endCall()){
+        return false;
+    }
+
+    prInt.println("the call is ended");
 
     return true;
 }
@@ -113,6 +125,13 @@ bool answer(std::string raw_args){
         return false;
     }
 
+
+    if (!client.answer()){
+        return false;
+    }
+
+    prInt.println("the call is answered");
+
     return true;
 }
 
@@ -122,6 +141,12 @@ bool reject(std::string raw_args){
     if (getArgs(0, raw_args) == false){
         return false;
     }
+
+    if (!client.reject()){
+        return false;
+    }
+
+    prInt.println("the call is rejected");
 
     return true;
 }
