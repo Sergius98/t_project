@@ -51,7 +51,7 @@ bool getArgs(long unsigned int num, std::string raw_args, std::vector<std::strin
 }
 
 
-// register name number
+// register number
 bool cmdRegister(std::string raw_args){
     prInt.logln("inside cmdRegister()");
     std::vector<std::string> args_vector;
@@ -79,6 +79,7 @@ bool setName(std::string raw_args){
     if (getArgs(1, raw_args, &args_vector) == false){
         return false;
     }
+    client.setName(args_vector[0]);
 
     return true;
 }
