@@ -59,6 +59,8 @@ class MobileClient {
         bool reg(std::string number);
         bool call(std::string destination_number);
         bool accept();
+        bool reject();
+        bool endCall();
         void setState(State state);
         std::string getPath();
         void handleModuleChange(std::string path, std::string value);

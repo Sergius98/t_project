@@ -78,10 +78,6 @@ bool MobileClient::accept() {
     std::string source_incomingNumber_path = makePath(_number, Leaf::incomingNumber);
     std::string source_state_path = makePath(_number, Leaf::state);
     std::string destination_state_path = "";
-    std::string source_state = "";
-    std::string source_incomingNumber = "";
-    std::string destination_state = "";
-    std::string idle_state = states.find(State::idle)->second;
     std::string busy_state = states.find(State::busy)->second;
 
     if (_state == State::active){
@@ -90,13 +86,39 @@ bool MobileClient::accept() {
             
             _agent->changeData(destination_state_path, busy_state);
             _agent->changeData(source_state_path, busy_state);
-            setState(State::active);
+            setState(State::busy);
             return true;
         } else {
             prInt.println("your doesn't have an incoming call");
         }
     } else {
         prInt.println({"you need to be active to accept a call, but your state is: ", states.find(_state)->second});
+    }
+    return false;
+}
+
+bool MobileClient::reject() {
+    std::string source_incomingNumber_path = makePath(_number, Leaf::incomingNumber);
+    std::string source_state_path = makePath(_number, Leaf::state);
+    std::string destination_state_path = "";
+    std::string source_state = "";
+    std::string source_incomingNumber = "";
+    std::string destination_state = "";
+    std::string idle_state = states.find(State::idle)->second;
+
+    if (_state == State::active){
+        if (_incomingNumber!=""){
+            destination_state_path = makePath(_incomingNumber, Leaf::state);
+            
+            _agent->changeData(destination_state_path, idle_state);
+            _agent->changeData(source_state_path, idle_state);
+            setState(State::idleReg);
+            return true;
+        } else {
+            prInt.println("you doesn't have an incoming call");
+        }
+    } else {
+        prInt.println({"you need to be active to reject a call, but your state is: ", states.find(_state)->second});
     }
     return false;
 }
