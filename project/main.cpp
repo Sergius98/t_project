@@ -55,9 +55,10 @@ bool getArgs(long unsigned int num, std::string raw_args, std::vector<std::strin
 bool cmdRegister(std::string raw_args){
     prInt.logln("inside cmdRegister()");
     std::vector<std::string> args_vector;
-    if (getArgs(1, raw_args, &args_vector) == false){
+    if (getArgs(2, raw_args, &args_vector) == false){
         return false;
     }
+    client.setName(args_vector[1]);
     client.reg(args_vector[0]);
     //agent.subscribeForModelChanges();
 
@@ -236,6 +237,13 @@ int main(){
         std::cin >> command;
         if (command == "exit") {
             ex_flag = false;
+        } else if (command == "log") {
+            std::cin >> command;
+            if (command == "on"){
+                prInt.setLog(true);
+            } else if (command == "off"){
+                prInt.setLog(false);
+            }
         } else {
             getline(std::cin, args);
             success_flag = ui.searchAndCall(command, args);

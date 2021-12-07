@@ -25,9 +25,9 @@ class NetConfAgent {
         NetConfAgent();
         void init();
         void closeSysrepo();
-        bool subscribeForModelChanges(std::string path, MobileClient *mobileClient);
+        bool subscribeForModelChanges(std::string path, std::string modelName, MobileClient *mobileClient);
         bool fetchData(std::string path, std::string &str);
-        void registerOperData(std::string moduleName, std::string xPath, std::string &nodePath, std::string &value);
+        void registerOperData(std::string &path, std::string modelName, MobileClient *mobileClient);
         bool changeData(std::string path, std::string value);
     private:
         std::unique_ptr<sysrepo::Connection> _conn;

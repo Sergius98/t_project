@@ -19,13 +19,15 @@ enum class State {
     idle,
     idleReg,
     busy,
-    active
+    active,
+    activeIncoming
 };
 const std::map<State, std::string> states = {
     { State::idle, "idle" },
     { State::idleReg, "idle" },
     { State::busy, "busy" },
-    { State::active, "active" }
+    { State::active, "active" },
+    { State::activeIncoming, "active" }
 };
 
 enum class Leaf {
@@ -46,22 +48,21 @@ const std::map<Leaf, std::string> leafs = {
 };
 
 
-const std::string module_name = "commutator";
-const std::string container_path = "subscribers/subscriber";
-const std::string key_name = "number";
+const std::string moduleName = "commutator";
+const std::string containerPath = "subscribers/subscriber";
+const std::string keyName = "number";
 const std::string leafPathPattern = "/{}:{}[{}='{}']{}";
 
 class MobileClient {
     public:
         MobileClient();
         void setName(std::string name);
-        std::string getName();
+        void handleOperData(std::string &name);
         bool reg(std::string number);
         bool call(std::string destination_number);
         bool answer();
         bool reject();
         bool endCall();
-        void setState(State state);
         std::string getPath();
         void handleModuleChange(std::string path, std::string value);
 
@@ -71,12 +72,13 @@ class MobileClient {
         bool changeData(std::string path, std::string value);
         /*****/
     private:
-        std::string makePath(std::string key, Leaf leaf);
         std::string _name = "";
         std::string _number = "";
-        std::string _incomingNumber = "";
+        std::string _routingNumber = "";
         State _state = State::idle;
         std::unique_ptr<NetConfAgent> _agent;
+        std::string _namePath = "";
+        std::string makePath(std::string key, Leaf leaf);
 };
 
 #endif

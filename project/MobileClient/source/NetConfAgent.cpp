@@ -3,10 +3,6 @@
 
 
 NetConfAgent::NetConfAgent(){
-    init();
-}
-
-void NetConfAgent::init(){
     _conn = std::make_unique<sysrepo::Connection>();
     _sess = _conn->sessionStart();
     //_sess->switchDatastore(sysrepo::Datastore::Operational);
@@ -15,47 +11,52 @@ void NetConfAgent::init(){
     */
 }
 
+void NetConfAgent::init(){
+}
+
 void NetConfAgent::closeSysrepo(){
     // todo: delete config
     _subOperData.reset();
     _subModuleChange.reset();
-    _sess.reset();
-    _conn.reset();
 }
 
 
-void NetConfAgent::registerOperData(std::string moduleName, std::string xPath, std::string &nodePath, std::string &value) {
+void NetConfAgent::registerOperData(std::string &path, std::string modelName, MobileClient *mobileClient) {
     _subOperData.reset();
-    sysrepo::OperGetItemsCb operGetCb = [&] (sysrepo::Session session, auto, auto, auto, auto, auto, std::optional<libyang::DataNode>& parent) {
-        prInt.logln("\noperGetCb():");
+    sysrepo::OperGetItemsCb operGetCb = [mobileClient, path] (sysrepo::Session session, auto, auto, auto, auto, auto, std::optional<libyang::DataNode>& parent) {
+        prInt.print("\n");
+        prInt.logln("operGetCb():");
+        std::string value = "";
+        mobileClient->handleOperData(value);
+        parent = session.getContext().newPath(path.c_str(), value.c_str());
         prInt.logInputPointer();
-        //std::cout << std::endl << "operGetCb():" << std::endl;
-        parent = session.getContext().newPath(nodePath.c_str(), value.c_str());
         return sysrepo::ErrorCode::Ok;
     };
-    _subOperData = _sess->onOperGetItems(moduleName.c_str(), operGetCb, xPath.c_str());
+    _subOperData = _sess->onOperGetItems(moduleName.c_str(), operGetCb, path.c_str());
 }
 
 // std::string path
-bool NetConfAgent::subscribeForModelChanges(std::string path, MobileClient *mobileClient){
+bool NetConfAgent::subscribeForModelChanges(std::string path, std::string modelName, MobileClient *mobileClient){
     _subModuleChange.reset();
     sysrepo::ModuleChangeCb moduleChangeCb = [mobileClient] (sysrepo::Session session, auto, auto, auto, auto, auto) -> sysrepo::ErrorCode {
-        prInt.logln("\nmoduleChangeCb()");
-        prInt.logInputPointer();
+        prInt.print("\n");
+        prInt.logln("moduleChangeCb()");
         //std::cout << std::endl << "sess->getChanges():" << std::endl;
         for (auto change: session.getChanges("//.")){
             if (change.operation == sysrepo::ChangeOperation::Created || change.operation == sysrepo::ChangeOperation::Modified){
                 if (change.node.schema().nodeType() == libyang::NodeType::Leaf){
-                    std::string change_path = std::string(change.node.path().get().get());
-                    std::string change_value = std::string(change.node.asTerm().valueStr());
-                    prInt.logln({"found change: ", change_path, change_value});
-                    mobileClient->handleModuleChange(change_path, change_value);
+                    std::string changePath = std::string(change.node.path().get().get());
+                    std::string changeValue = std::string(change.node.asTerm().valueStr());
+                    prInt.logln({"found change: ", changePath," -into-> ", changeValue});
+                    mobileClient->handleModuleChange(changePath, changeValue);
                 }
             }
         }
+        prInt.logInputPointer();
         return sysrepo::ErrorCode::Ok;
     };
-    _subModuleChange = _sess->onModuleChange("testmodel",
+    prInt.logln({"subscribed on: ", path});
+    _subModuleChange = _sess->onModuleChange(modelName.c_str(),
                                 moduleChangeCb,
                                 path.c_str(),
                                 0,
@@ -78,8 +79,22 @@ bool NetConfAgent::fetchData(std::string path, std::string &data_str){
             data_str = data_node->asTerm().valueStr();
             return true;
         }
+    } else {
+        prInt.logln("data not found in Running");
+        _sess->switchDatastore(sysrepo::Datastore::Operational);
+        data = _sess->getData(path.c_str());
+        if (data.has_value()){
+            auto data_node = data->findPath(path.c_str());
+            if (data_node.has_value()){
+                data_str = data_node->asTerm().valueStr();
+                _sess->switchDatastore(sysrepo::Datastore::Running);
+                return true;
+            }
+        }
+        _sess->switchDatastore(sysrepo::Datastore::Running);
+
     }
-    prInt.println("data not found");
+    prInt.logln("data not found in Operational");
     //std::cout << "data not found" << std::endl; 
     data_str = "";
     //_sess->switchDatastore(sysrepo::Datastore::Operational);
