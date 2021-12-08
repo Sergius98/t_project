@@ -20,6 +20,9 @@ class MobileClient;
 extern PrintInterface prInt;
 extern StringInterface strInt;
 
+//namespace MobileCli{
+
+
 class NetConfAgent {
     public:
         NetConfAgent();
@@ -27,6 +30,7 @@ class NetConfAgent {
         void closeSysrepo();
         bool subscribeForModelChanges(std::string path, std::string modelName, MobileClient *mobileClient);
         bool fetchData(std::string path, std::string &str);
+        bool deleteData(std::string path);
         void registerOperData(std::string &path, std::string modelName, MobileClient *mobileClient);
         bool changeData(std::string path, std::string value);
     private:
@@ -35,5 +39,7 @@ class NetConfAgent {
         std::optional<sysrepo::Subscription> _subModuleChange;
         std::optional<sysrepo::Subscription> _subOperData;
 };
+
+//}
 
 #endif

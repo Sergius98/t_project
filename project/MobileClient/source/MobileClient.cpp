@@ -1,7 +1,7 @@
 #include "MobileClient.hpp"
 #include "NetConfAgent.hpp"
 
-
+//namespace MobileCli{
 /*****/
 // delete later
 bool MobileClient::fetchData(std::string path, std::string &str){
@@ -30,16 +30,34 @@ bool MobileClient::reg(std::string number) {
     std::string path = makePath(number, Leaf::number);
     std::string empty = "";
 
-    if (!(_agent->fetchData(path, empty))){
-        _number = number;
-        _agent->changeData(path, _number);
-        _agent->subscribeForModelChanges(makePath(_number, Leaf::none), moduleName, this);
-        _namePath = makePath(_number, Leaf::userName);
-        _agent->registerOperData(_namePath, moduleName, this);
-        _state = State::idleReg;
-        return true;
+    if (_state==State::idle){
+        if (!(_agent->fetchData(path, empty))){
+            _number = number;
+            _agent->changeData(path, _number);
+            _agent->subscribeForModelChanges(makePath(_number, Leaf::none), moduleName, this);
+            _namePath = makePath(_number, Leaf::userName);
+            _agent->registerOperData(_namePath, moduleName, this);
+            _state = State::idleReg;
+            return true;
+        }
+        prInt.println({"Number ",number," is already taken"});
+    } else {
+        prInt.println("You are already registered");
     }
-    prInt.println({"Number ",number," is already taken"});
+    return false;
+}
+bool MobileClient::unReg() {
+    std::string path = makePath(_number, Leaf::none);
+
+    if (_state==State::idleReg){
+        _number = "";
+        _agent->closeSysrepo();
+        _agent->deleteData(path);
+        _state = State::idle;
+        return true;
+    } else {
+        prInt.println("You are not idle or not registered");
+    }
     return false;
 }
 
@@ -188,3 +206,5 @@ void MobileClient::handleModuleChange(std::string path, std::string value){
 
     prInt.logln("exit handleModuleChange");
 }
+
+//}

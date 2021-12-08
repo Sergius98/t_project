@@ -13,6 +13,8 @@ extern PrintInterface prInt;
 extern StringInterface strInt;
 
 
+//namespace MobileCli{
+
 class NetConfAgent;
 
 enum class State {
@@ -59,6 +61,7 @@ class MobileClient {
         void setName(std::string name);
         void handleOperData(std::string &name);
         bool reg(std::string number);
+        bool unReg();
         bool call(std::string destination_number);
         bool answer();
         bool reject();
@@ -80,5 +83,8 @@ class MobileClient {
         std::string _namePath = "";
         std::string makePath(std::string key, Leaf leaf);
 };
+
+
+//}
 
 #endif

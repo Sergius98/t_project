@@ -18,6 +18,7 @@
 extern PrintInterface prInt;
 extern StringInterface strInt;
 
+//MobileCli::MobileClient client;
 MobileClient client;
 
 
@@ -71,6 +72,7 @@ bool unregister(std::string raw_args){
     if (getArgs(0, raw_args) == false){
         return false;
     }
+    client.unReg();
     return true;
 }
 // setName name

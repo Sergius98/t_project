@@ -2,6 +2,8 @@
 #include "MobileClient.hpp"
 
 
+//namespace MobileCli{
+
 NetConfAgent::NetConfAgent(){
     _conn = std::make_unique<sysrepo::Connection>();
     _sess = _conn->sessionStart();
@@ -32,7 +34,7 @@ void NetConfAgent::registerOperData(std::string &path, std::string modelName, Mo
         prInt.logInputPointer();
         return sysrepo::ErrorCode::Ok;
     };
-    _subOperData = _sess->onOperGetItems(moduleName.c_str(), operGetCb, path.c_str());
+    _subOperData = _sess->onOperGetItems(modelName.c_str(), operGetCb, path.c_str());
 }
 
 // std::string path
@@ -107,5 +109,12 @@ bool NetConfAgent::changeData(std::string path, std::string value) {
     return true;
 }
 
+bool NetConfAgent::deleteData(std::string path) {
+    _sess->deleteItem(path.c_str());
+    _sess->applyChanges();
+    return true;
+}
 
 
+
+//}
