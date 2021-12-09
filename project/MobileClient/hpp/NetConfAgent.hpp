@@ -15,18 +15,17 @@
 #include "PrintInterface.hpp"
 #include "StringInterface.hpp"
 
-class MobileClient;
 
 extern PrintInterface prInt;
 extern StringInterface strInt;
 
-//namespace MobileCli{
+namespace MobileCli{
+class MobileClient;
 
 
 class NetConfAgent {
     public:
         NetConfAgent();
-        void init();
         void closeSysrepo();
         bool subscribeForModelChanges(std::string path, std::string modelName, MobileClient *mobileClient);
         bool fetchData(std::string path, std::string &str);
@@ -40,6 +39,6 @@ class NetConfAgent {
         std::optional<sysrepo::Subscription> _subOperData;
 };
 
-//}
+}
 
 #endif

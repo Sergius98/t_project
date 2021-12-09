@@ -1,7 +1,7 @@
 #include "MobileClient.hpp"
 #include "NetConfAgent.hpp"
 
-//namespace MobileCli{
+namespace MobileCli{
 /*****/
 // delete later
 bool MobileClient::fetchData(std::string path, std::string &str){
@@ -17,6 +17,26 @@ MobileClient::MobileClient() {
     _agent = std::make_unique<NetConfAgent>();
 }
 
+MobileClient::~MobileClient() {
+    if (_state == State::active){
+        std::string destinationStatePath = makePath(_routingNumber, Leaf::state);
+        std::string idleState = states.find(State::idle)->second;
+        if (_state == State::active){
+            _agent->changeData(destinationStatePath, idleState);
+            _agent->changeData(makePath(_number, Leaf::state), idleState);
+            _state = State::idleReg;
+            _routingNumber = "";
+        }
+    }
+    if (_state == State::busy){
+        endCall();
+    }
+    if (_state == State::activeIncoming){
+        reject();
+    }
+    unReg();
+    _agent.reset();
+}
 
 void MobileClient::setName(std::string name) {
     _name = name;
@@ -207,4 +227,4 @@ void MobileClient::handleModuleChange(std::string path, std::string value){
     prInt.logln("exit handleModuleChange");
 }
 
-//}
+}

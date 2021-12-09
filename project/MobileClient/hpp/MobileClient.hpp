@@ -13,7 +13,12 @@ extern PrintInterface prInt;
 extern StringInterface strInt;
 
 
-//namespace MobileCli{
+namespace MobileCli{
+
+const std::string moduleName = "commutator";
+const std::string containerPath = "subscribers/subscriber";
+const std::string keyName = "number";
+const std::string leafPathPattern = "/{}:{}[{}='{}']{}";
 
 class NetConfAgent;
 
@@ -50,14 +55,10 @@ const std::map<Leaf, std::string> leafs = {
 };
 
 
-const std::string moduleName = "commutator";
-const std::string containerPath = "subscribers/subscriber";
-const std::string keyName = "number";
-const std::string leafPathPattern = "/{}:{}[{}='{}']{}";
-
 class MobileClient {
     public:
         MobileClient();
+        ~MobileClient();
         void setName(std::string name);
         void handleOperData(std::string &name);
         bool reg(std::string number);
@@ -85,6 +86,6 @@ class MobileClient {
 };
 
 
-//}
+}
 
 #endif
