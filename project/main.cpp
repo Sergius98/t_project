@@ -18,8 +18,7 @@
 extern PrintInterface prInt;
 extern StringInterface strInt;
 
-//MobileCli::MobileClient client;
-MobileClient client;
+MobileCli::MobileClient client;
 
 
 std::vector<std::string> splitArgs (std::string raw_args){
