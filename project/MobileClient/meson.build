@@ -4,7 +4,7 @@ MobileClient_files = [
     'source/MobileClient.cpp',
     ]
 
-MobileClient_include = include_directories('hpp')
+MobileClient_include = include_directories('hpp', 'api')
 
 
 libpcre = dependency('libpcre', required : true)

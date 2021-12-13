@@ -2,15 +2,6 @@
 #include "NetConfAgent.hpp"
 
 namespace MobileCli{
-/*****/
-// delete later
-bool MobileClient::fetchData(std::string path, std::string &str){
-    return _agent->fetchData(path, str);
-}
-bool MobileClient::changeData(std::string path, std::string value){
-    return _agent->changeData(path, value);
-}
-/*****/
 
 
 MobileClient::MobileClient() {
@@ -20,8 +11,10 @@ MobileClient::MobileClient() {
 MobileClient::~MobileClient() {
     if (_state == State::active){
         std::string destinationStatePath = makePath(_routingNumber, Leaf::state);
+        std::string destinationIncomingNumberPath = makePath(_routingNumber, Leaf::incomingNumber);
         std::string idleState = states.find(State::idle)->second;
         if (_state == State::active){
+            _agent->changeData(destinationIncomingNumberPath, "");
             _agent->changeData(destinationStatePath, idleState);
             _agent->changeData(makePath(_number, Leaf::state), idleState);
             _state = State::idleReg;
@@ -34,7 +27,9 @@ MobileClient::~MobileClient() {
     if (_state == State::activeIncoming){
         reject();
     }
-    unReg();
+    if (_state==State::idleReg){
+        unReg();
+    }
     _agent.reset();
 }
 
@@ -171,7 +166,7 @@ bool MobileClient::endCall() {
             _routingNumber = "";
             return true;
         } else {
-            prInt.println("you don't have an ongoing call");
+            prInt.println("you don't have an ongoing call, but your state is busy");
         }
     } else {
         prInt.println({"you need to be busy to end a call, but your state is: ", states.find(_state)->second});

@@ -40,8 +40,6 @@ bool getArgs(long unsigned int num, std::string raw_args, std::vector<std::strin
     std::vector<std::string> args_vector = splitArgs(raw_args);
     if (args_vector.size() != num) {
         prInt.println(strInt.format("function expects {} args, but only {} was passed", {num, args_vector.size()}));
-        //std::cout << "function expects " << num << 
-        //    "args, but only " << args_vector.size() << " was passed" << std::endl;
         return false;
     }
     if (args != nullptr){
@@ -60,7 +58,6 @@ bool cmdRegister(std::string raw_args){
     }
     client.setName(args_vector[1]);
     client.reg(args_vector[0]);
-    //agent.subscribeForModelChanges();
 
     return true;
 }
@@ -164,47 +161,17 @@ struct UserInterface{
 
     bool searchAndCall(std::string command_key, std::string args){
         auto mapIter = commands.find(command_key);
-        /*chk if not end*/
         if  (mapIter != commands.end()){
             auto mapFun = mapIter->second;
 
             return mapFun(args);
         } else {
             prInt.println("CMD not found");
-            //std::cout << "CMD not found" << std::endl;
             return false;
         }
     }
 };
 
-/******/
-//delete later
-bool fetchData(std::string raw_args){
-    std::vector<std::string> args_vector;
-    std::string value;
-    if (getArgs(1, raw_args, &args_vector) == false){
-        prInt.println("wrong number of arguments");
-        return false;
-    } else {
-        client.fetchData(args_vector[0], value); 
-        prInt.logln({"value:", value});
-    }
-    return true;
-}
-bool changeData(std::string raw_args){
-    std::vector<std::string> args_vector;
-    std::string value;
-    if (getArgs(2, raw_args, &args_vector) == false){
-        prInt.println("wrong number of arguments");
-        return false;
-    } else {
-        client.changeData(args_vector[0], args_vector[1]); 
-        client.fetchData(args_vector[0], value); 
-        prInt.logln({"value:", value});
-    }
-    return true;
-}
-/******/
 int main(){
 
     prInt.setLog(true);
@@ -220,21 +187,12 @@ int main(){
     ui.insert("reject", reject);
 
 
-    /******/
-    //delete later
-    ui.insert("fetch", fetchData);
-    ui.insert("change", changeData);
-    /******/
-
-
-
     bool ex_flag = true;
     std::string command, args;
     while (ex_flag){
         bool success_flag = false;
 
         prInt.printInputPointer();
-        //std::cout << ">";
         std::cin >> command;
         if (command == "exit") {
             ex_flag = false;
@@ -250,7 +208,6 @@ int main(){
             success_flag = ui.searchAndCall(command, args);
             if (success_flag == false) {
                 prInt.println("CMD failed to execute");
-                //std::cout << "CMD failed to execute" << std::endl;
             }
         }
     }

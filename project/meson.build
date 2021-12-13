@@ -8,6 +8,7 @@ project(
 
 subdir('utils')
 subdir('MobileClient')
+subdir('test')
 
 ex_source_files = [
     'main.cpp'

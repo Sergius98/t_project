@@ -12,18 +12,19 @@
 #include <sysrepo-cpp/Session.hpp>
 #include <sysrepo-cpp/utils/exception.hpp>
 
+#include "INetConfAgent.hpp"
+
 #include "PrintInterface.hpp"
 #include "StringInterface.hpp"
-
 
 extern PrintInterface prInt;
 extern StringInterface strInt;
 
 namespace MobileCli{
-class MobileClient;
+//class MobileClient;
 
 
-class NetConfAgent {
+class NetConfAgent: public INetConfAgent {
     public:
         NetConfAgent();
         void closeSysrepo();
@@ -32,6 +33,7 @@ class NetConfAgent {
         bool deleteData(std::string path);
         void registerOperData(std::string &path, std::string modelName, MobileClient *mobileClient);
         bool changeData(std::string path, std::string value);
+        ~NetConfAgent();
     private:
         std::unique_ptr<sysrepo::Connection> _conn;
         std::optional<sysrepo::Session> _sess;

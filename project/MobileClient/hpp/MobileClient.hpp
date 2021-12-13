@@ -2,16 +2,14 @@
 #define MOBILECLIENT_HPP
 
 #include <map>
-#include <iostream>
-#include <string>
 #include <memory>
+#include <iostream>
 #include <string>
 
 #include "PrintInterface.hpp"
 #include "StringInterface.hpp"
 extern PrintInterface prInt;
 extern StringInterface strInt;
-
 
 namespace MobileCli{
 
@@ -59,22 +57,68 @@ class MobileClient {
     public:
         MobileClient();
         ~MobileClient();
+        /**
+         * @brief Stores the name string to be used as operData.
+         *
+         * @param[in] name string to be saved as name.
+         */
         void setName(std::string name);
+        /**
+         * @brief Retrieves the name string to be used in operData.
+         *
+         * @param[out] name string to be set as name.
+         */
         void handleOperData(std::string &name);
+        /**
+         * @brief Registers the subscriber in netopeer if the number is free.
+         *
+         * @param[in] number string to be stored as number.
+         *
+         * @return /true when the number is available, /false otherwise.
+         */
         bool reg(std::string number);
+        /**
+         * @brief Unegisters the subscriber in netopeer if the subscriber is registered and idle.
+         *
+         * @return /true when the state is idleReg, /false otherwise.
+         */
         bool unReg();
+        /**
+         * @brief send a call request to the subscriber with number destination_number.
+         *
+         * @param[in] destination_number string to use as the key for the subscriber's config.
+         *
+         * @return /true when the user is idleReg and the subscriber exist and is idle, /false otherwise.
+         */
         bool call(std::string destination_number);
+        /**
+         * @brief establishes the connection with the incoming caller, whose number is stored in _routingNumber.
+         *
+         * @return /true when the user is activeIncoming, /false otherwise.
+         */
         bool answer();
+        /**
+         * @brief refuses the connection with the incoming caller, whose number is stored in _routingNumber.
+         *
+         * @return /true when the user is activeIncoming, /false otherwise.
+         */
         bool reject();
+        /**
+         * @brief ends the connection with the other subscriber, whose number is stored in _routingNumber.
+         *
+         * @return /true when the user is busy and the _routingNumber exists, /false otherwise.
+         */
         bool endCall();
-        std::string getPath();
+        /**
+         * @brief handles the change-pairs recieved from the NetConfAgent.
+         *
+         * @param[in] path path to the leaf that was changed.
+         *
+         * @param[in] value value of the leaf that was changed.
+         *
+         * @return /true when the user is busy and the _routingNumber exists, /false otherwise.
+         */
         void handleModuleChange(std::string path, std::string value);
-
-        /*****/
-        // delete later
-        bool fetchData(std::string path, std::string &str);
-        bool changeData(std::string path, std::string value);
-        /*****/
     private:
         std::string _name = "";
         std::string _number = "";
@@ -82,6 +126,15 @@ class MobileClient {
         State _state = State::idle;
         std::unique_ptr<NetConfAgent> _agent;
         std::string _namePath = "";
+        /**
+         * @brief formats path-string to the requested leaf.
+         *
+         * @param[in] key key (number) of the requested subscriber.
+         *
+         * @param[in] leaf code of the requested leaf.
+         *
+         * @return /true when the user is busy and the _routingNumber exists, /false otherwise.
+         */
         std::string makePath(std::string key, Leaf leaf);
 };
 

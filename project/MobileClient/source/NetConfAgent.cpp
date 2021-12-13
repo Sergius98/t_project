@@ -12,6 +12,12 @@ NetConfAgent::NetConfAgent(){
     */
 }
 
+NetConfAgent::~NetConfAgent(){
+    closeSysrepo();
+    _sess.reset();
+    _conn.reset();
+}
+
 
 void NetConfAgent::closeSysrepo(){
     _subOperData.reset();
