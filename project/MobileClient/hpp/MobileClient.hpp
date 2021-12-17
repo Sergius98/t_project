@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 
+#include "INetConfAgent.hpp"
 #include "PrintInterface.hpp"
 #include "StringInterface.hpp"
 extern PrintInterface prInt;
@@ -56,6 +57,7 @@ const std::map<Leaf, std::string> leafs = {
 class MobileClient {
     public:
         MobileClient();
+        MobileClient(std::unique_ptr<INetConfAgent> agent);
         ~MobileClient();
         /**
          * @brief Stores the name string to be used as operData.
@@ -124,7 +126,7 @@ class MobileClient {
         std::string _number = "";
         std::string _routingNumber = "";
         State _state = State::idle;
-        std::unique_ptr<NetConfAgent> _agent;
+        std::unique_ptr<INetConfAgent> _agent;
         std::string _namePath = "";
         /**
          * @brief formats path-string to the requested leaf.

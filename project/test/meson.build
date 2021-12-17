@@ -8,6 +8,7 @@ mobCli_test = executable(
     'mobCli_test', 
     sources : ['source/MobileClientTest.cpp'], 
     dependencies : [MobileClient_lib_dep, utils_lib_dep, gtest_dep], 
-    include_directories : [test_incl_dirs]
+    include_directories : [test_incl_dirs], 
+    #cpp_args : '-DTESTING_MOBILECLIENT=true'
 )
 test('mobCli_test', mobCli_test)

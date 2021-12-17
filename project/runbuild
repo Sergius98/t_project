@@ -3,6 +3,8 @@
 set -x
 
 rm -rf builddir/
-meson builddir
+meson -Db_coverage=true builddir
 ninja -C builddir/
+ninja test -C builddir/
+ninja coverage -C builddir/
 sudo ./builddir/ne_client

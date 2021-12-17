@@ -4,11 +4,15 @@
 namespace MobileCli{
 
 
-MobileClient::MobileClient() {
-    _agent = std::make_unique<NetConfAgent>();
-}
+MobileClient::MobileClient(): 
+        MobileClient(std::make_unique<NetConfAgent>()) {}
+        
+MobileClient::MobileClient(std::unique_ptr<INetConfAgent> agent): 
+        _agent{std::move(agent)} {}
 
 MobileClient::~MobileClient() {
+/*
+#ifndef TESTING_MOBILECLIENT
     if (_state == State::active){
         std::string destinationStatePath = makePath(_routingNumber, Leaf::state);
         std::string destinationIncomingNumberPath = makePath(_routingNumber, Leaf::incomingNumber);
@@ -31,6 +35,8 @@ MobileClient::~MobileClient() {
         unReg();
     }
     _agent.reset();
+#endif
+*/
 }
 
 void MobileClient::setName(std::string name) {
