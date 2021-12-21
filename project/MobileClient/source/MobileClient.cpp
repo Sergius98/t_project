@@ -11,8 +11,6 @@ MobileClient::MobileClient(std::unique_ptr<INetConfAgent> agent):
         _agent{std::move(agent)} {}
 
 MobileClient::~MobileClient() {
-/*
-#ifndef TESTING_MOBILECLIENT
     if (_state == State::active){
         std::string destinationStatePath = makePath(_routingNumber, Leaf::state);
         std::string destinationIncomingNumberPath = makePath(_routingNumber, Leaf::incomingNumber);
@@ -35,8 +33,6 @@ MobileClient::~MobileClient() {
         unReg();
     }
     _agent.reset();
-#endif
-*/
 }
 
 void MobileClient::setName(std::string name) {
@@ -92,25 +88,29 @@ bool MobileClient::call(std::string destination_number) {
     std::string activeState = states.find(State::active)->second;
     std::string routingName = "";
 
-    if (_state == State::idleReg){
-        if (_agent->fetchData(destinationStatePath, destinationState)){
-            if (destinationState == idleState){
-                _routingNumber = destination_number;
-                _agent->changeData(sourceStatePath, activeState);
-                _agent->changeData(destinationStatePath, activeState);
-                _agent->changeData(destinationIncomingNumberPath, _number);
+    if (destination_number != _number){
+        if (_state == State::idleReg){
+            if (_agent->fetchData(destinationStatePath, destinationState)){
+                if (destinationState == idleState){
+                    _routingNumber = destination_number;
+                    _agent->changeData(sourceStatePath, activeState);
+                    _agent->changeData(destinationStatePath, activeState);
+                    _agent->changeData(destinationIncomingNumberPath, _number);
 
-                _agent->fetchData(makePath(_routingNumber, Leaf::userName), routingName);
-                prInt.println({"\nyou have called ", routingName});
-                return true;
+                    _agent->fetchData(makePath(_routingNumber, Leaf::userName), routingName);
+                    prInt.println({"\nyou have called ", routingName});
+                    return true;
+                } else {
+                    prInt.println("the destination is not idle");
+                }
             } else {
-                prInt.println("the destination is not idle");
+                prInt.println("the number requested does not exist");
             }
         } else {
-            prInt.println("the number requested does not exist");
+            prInt.println({"you need to be idle and registered, but your state is: ", states.find(_state)->second});
         }
     } else {
-        prInt.println({"you need to be idle and registered, but your state is: ", states.find(_state)->second});
+        prInt.println("you can't call yourself");
     }
     return false;
 }
@@ -166,6 +166,7 @@ bool MobileClient::endCall() {
             destinatonIncomingNumber = makePath(_routingNumber, Leaf::incomingNumber);
             
             _agent->changeData(destinatonIncomingNumber, "");
+            //_agent->changeData(sourceIncomingNumber, "");
             _agent->changeData(destinationStatePath, idleState);
             _agent->changeData(sourceStatePath, idleState);
             _state = State::idleReg;

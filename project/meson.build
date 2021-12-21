@@ -6,6 +6,10 @@ project(
     ]
 )
 
+#add_global_arguments('-fprofile-arcs', language : 'cpp')
+#add_global_arguments('-ftest-coverage', language : 'cpp')
+#add_global_arguments('-fPIC', language : 'cpp')
+
 subdir('utils')
 subdir('MobileClient')
 subdir('test')

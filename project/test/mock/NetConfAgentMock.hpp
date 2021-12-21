@@ -3,6 +3,8 @@
 #include <gmock/gmock.h>
 #include "INetConfAgent.hpp"
 
+namespace mock{
+
 class NetConfAgentMock: public MobileCli::INetConfAgent{
     public:
         MOCK_METHOD0(closeSysrepo, void());
@@ -12,5 +14,7 @@ class NetConfAgentMock: public MobileCli::INetConfAgent{
         MOCK_METHOD3(registerOperData, void(std::string &path, std::string modelName, MobileCli::MobileClient *mobileClient));
         MOCK_METHOD2(changeData, bool(std::string path, std::string value));
 };
+
+}
 
 #endif

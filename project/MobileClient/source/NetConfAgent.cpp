@@ -28,8 +28,7 @@ void NetConfAgent::closeSysrepo(){
 void NetConfAgent::registerOperData(std::string &path, std::string modelName, MobileClient *mobileClient) {
     _subOperData.reset();
     sysrepo::OperGetItemsCb operGetCb = [mobileClient, path] (sysrepo::Session session, auto, auto, auto, auto, auto, std::optional<libyang::DataNode>& parent) {
-        prInt.print("\n");
-        prInt.logln("operGetCb():");
+        prInt.logln("\noperGetCb():");
         std::string value = "";
         mobileClient->handleOperData(value);
         parent = session.getContext().newPath(path.c_str(), value.c_str());
@@ -55,7 +54,7 @@ bool NetConfAgent::subscribeForModelChanges(std::string path, std::string modelN
                 }
             }
         }
-        prInt.logInputPointer();
+        prInt.printInputPointer();
         return sysrepo::ErrorCode::Ok;
     };
     prInt.logln({"subscribed on: ", path});
