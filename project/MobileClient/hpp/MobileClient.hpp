@@ -64,7 +64,7 @@ class MobileClient {
          *
          * @param[in] name string to be saved as name.
          */
-        void setName(std::string name);
+        void setName(const std::string &name);
         /**
          * @brief Retrieves the name string to be used in operData.
          *
@@ -78,7 +78,7 @@ class MobileClient {
          *
          * @return /true when the number is available, /false otherwise.
          */
-        bool reg(std::string number);
+        bool reg(const std::string &number);
         /**
          * @brief Unegisters the subscriber in netopeer if the subscriber is registered and idle.
          *
@@ -92,7 +92,7 @@ class MobileClient {
          *
          * @return /true when the user is idleReg and the subscriber exist and is idle, /false otherwise.
          */
-        bool call(std::string destination_number);
+        bool call(const std::string &destination_number);
         /**
          * @brief establishes the connection with the incoming caller, whose number is stored in _routingNumber.
          *
@@ -120,7 +120,7 @@ class MobileClient {
          *
          * @return /true when the user is busy and the _routingNumber exists, /false otherwise.
          */
-        void handleModuleChange(std::string path, std::string value);
+        void handleModuleChange(const std::string &path, const std::string &value);
     private:
         std::string _name = "";
         std::string _number = "";
@@ -137,7 +137,7 @@ class MobileClient {
          *
          * @return /true when the user is busy and the _routingNumber exists, /false otherwise.
          */
-        std::string makePath(std::string key, Leaf leaf);
+        std::string makePath(const std::string &key, Leaf leaf);
 };
 
 
