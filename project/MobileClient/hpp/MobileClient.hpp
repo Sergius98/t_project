@@ -7,12 +7,15 @@
 #include <string>
 
 #include "INetConfAgent.hpp"
-#include "PrintInterface.hpp"
-#include "StringInterface.hpp"
-extern PrintInterface prInt;
-extern StringInterface strInt;
+//#include "NetConfAgent.hpp"
 
-namespace MobileCli{
+//#include "PrintInterface.hpp"
+//#include "StringInterface.hpp"
+
+//using stringInterface::StrInt;
+//using printInterface::PrInt;
+
+namespace mobileClient{
 
 const std::string moduleName = "commutator";
 const std::string containerPath = "subscribers/subscriber";

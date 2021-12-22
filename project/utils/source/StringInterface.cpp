@@ -1,26 +1,21 @@
 #include "StringInterface.hpp"
 
-StringInterface strInt = StringInterface::getDefault();
-
-
-StringInterface StringInterface::getDefault(){
-    static StringInterface defaultStringInterface;
-    return defaultStringInterface;
-}
-
+namespace stringInterface{
+    
+/*
 template <typename T>
 std::string StringInterface::format(std::string format_str, T t) {
-    size_t start_pos = format_str.find(_formater);
+    size_t start_pos = format_str.find(formater);
     if(start_pos == std::string::npos){
         throw std::invalid_argument("too many values is provided");
     }
     if (std::is_arithmetic_v<t>){
-        format_str.replace(start_pos, _formater.length(), std::to_string(t));
+        format_str.replace(start_pos, formater.length(), std::to_string(t));
     } else {
-        format_str.replace(start_pos, _formater.length(), t);
+        format_str.replace(start_pos, formater.length(), t);
     }
 
-    start_pos = format_str.find(_formater);
+    start_pos = format_str.find(formater);
     if(start_pos != std::string::npos){
         throw std::invalid_argument("too little values is provided");
     }
@@ -29,32 +24,27 @@ std::string StringInterface::format(std::string format_str, T t) {
 
 template<typename T, typename... Args>
 std::string StringInterface::format(std::string format_str, T t, Args... args){
-    size_t start_pos = format_str.find(_formater);
+    size_t start_pos = format_str.find(formater);
     if(start_pos == std::string::npos){
         throw std::invalid_argument("too many values is provided");
     }
     if (std::is_arithmetic_v<t>){
-        format_str.replace(start_pos, _formater.length(), std::to_string(t));
+        format_str.replace(start_pos, formater.length(), std::to_string(t));
     } else {
-        format_str.replace(start_pos, _formater.length(), t);
+        format_str.replace(start_pos, formater.length(), t);
     }
-    return func(format_str, args...) ;
+    return format(format_str, args...) ;
 }
+*/
 
-std::string StringInterface::format(std::string format_str, std::list<std::string> values){
-    return format(format_str, _formater, values);
-}
 std::string StringInterface::format(std::string format_str, std::list<size_t> values){
-    return format(format_str, _formater, values);
-}
-std::string StringInterface::format(std::string format_str, std::string formater, std::list<size_t> values){
     std::list<std::string> str_values;
     for (auto value:values){
         str_values.push_back(std::to_string(value));
     }
-    return format(format_str, _formater, str_values);
+    return format(format_str, str_values);
 }
-std::string StringInterface::format(std::string format_str, std::string formater, std::list<std::string> values){
+std::string StringInterface::format(std::string format_str, std::list<std::string> values){
     for (auto value:values){
         size_t start_pos = format_str.find(formater);
         if(start_pos == std::string::npos){
@@ -69,6 +59,4 @@ std::string StringInterface::format(std::string format_str, std::string formater
     return format_str;
 }
 
-void StringInterface::setFormatSymbol(std::string formater){
-    _formater = formater;
 }

@@ -1,22 +1,21 @@
 #include "PrintInterface.hpp"
 
+namespace printInterface{
 
-PrintInterface prInt = PrintInterface::getDefault();
-
-PrintInterface PrintInterface::getDefault(){
-    static PrintInterface defaultPrintInterface;
-    return defaultPrintInterface;
-}
+bool PrintInterface::_logging = true;
+std::string PrintInterface::_inputPointer = ">";
+std::ostream *PrintInterface::_outStream {&std::cout};
+std::ostream *PrintInterface::_logStream {&std::cout};
 
 //flushes the output stream
 void PrintInterface::flush(std::ostream *stream){
     stream->flush();
 }
 void PrintInterface::flushOutput(){
-    flush(_outStream);
+    flush(PrintInterface::_outStream);
 }
 void PrintInterface::flushLog(){
-    flush(_logStream);
+    flush(PrintInterface::_logStream);
 }
 void PrintInterface::send(std::string str, std::ostream *stream){
     *stream<<str;
@@ -24,21 +23,21 @@ void PrintInterface::send(std::string str, std::ostream *stream){
 
 // print new input line for user
 void PrintInterface::printInputPointer(){
-    print(_inputPointer);
+    print(PrintInterface::_inputPointer);
     flushOutput();
 }
 // log new input line for user
 void PrintInterface::logInputPointer(){
-    log(_inputPointer);
+    log(PrintInterface::_inputPointer);
     flushLog();
 }
 
 void PrintInterface::print(std::string str){
-    send(str, _outStream);
+    send(str, PrintInterface::_outStream);
 }
 void PrintInterface::log(std::string str){
-    if (_logging){
-        send(str, _logStream);
+    if (PrintInterface::_logging){
+        send(str, PrintInterface::_logStream);
     }
 }
 
@@ -48,7 +47,7 @@ void PrintInterface::println(std::string str=""){
     flushOutput();
 }
 void PrintInterface::logln(std::string str=""){
-    if (_logging){
+    if (PrintInterface::_logging){
         log(str);
         log("\n");
         flushLog();
@@ -63,7 +62,7 @@ void PrintInterface::println(std::list<std::string> lst){
     flushOutput();
 }
 void PrintInterface::logln(std::list<std::string> lst){
-    if (_logging){
+    if (PrintInterface::_logging){
         for (auto str:lst){
             log(str);
         }
@@ -78,7 +77,7 @@ void PrintInterface::print(std::list<std::string> lst){
     flushOutput();
 }
 void PrintInterface::log(std::list<std::string> lst){
-    if (_logging){
+    if (PrintInterface::_logging){
         for (auto str:lst){
             log(str);
         }
@@ -86,15 +85,17 @@ void PrintInterface::log(std::list<std::string> lst){
     }
 }
 void PrintInterface::setLog(bool logging){
-    _logging = logging;
+    PrintInterface::_logging = logging;
 }
 void PrintInterface::setInputPointer(std::string inputPointer){
-    _inputPointer = inputPointer;
+    PrintInterface::_inputPointer = inputPointer;
 }
 
 void PrintInterface::changeOutput(std::ostream *outStream){
-    _outStream = outStream;
+    PrintInterface::_outStream = outStream;
 }
 void PrintInterface::changeLogOutput(std::ostream *logStream){
-    _logStream = logStream;
+    PrintInterface::_logStream = logStream;
+}
+
 }

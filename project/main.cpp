@@ -11,14 +11,14 @@
 
 #include "MobileClient.hpp"
 #include "NetConfAgent.hpp"
-#include "PrintInterface.hpp"
-#include "StringInterface.hpp"
+//#include "PrintInterface.hpp"
+//#include "StringInterface.hpp"
 
 
-extern PrintInterface prInt;
-extern StringInterface strInt;
+//using stringInterface::StrInt;
+//using printInterface::PrInt;
 
-MobileCli::MobileClient client;
+mobileClient::MobileClient client;
 
 
 std::vector<std::string> splitArgs (std::string raw_args){
@@ -34,12 +34,12 @@ std::vector<std::string> splitArgs (std::string raw_args){
 
 bool getArgs(long unsigned int num, std::string raw_args, std::vector<std::string> *args = nullptr){
     if ((args == nullptr)&&(num != 0)){
-        prInt.logln("function expects a vector for the requested arguments");
+        PrInt::logln("function expects a vector for the requested arguments");
         throw "you need to pass a container for the args";
     }
     std::vector<std::string> args_vector = splitArgs(raw_args);
     if (args_vector.size() != num) {
-        prInt.println(strInt.format("function expects {} args, but only {} was passed", {num, args_vector.size()}));
+        PrInt::println(StrInt::format("function expects {} args, but only {} was passed", {num, args_vector.size()}));
         return false;
     }
     if (args != nullptr){
@@ -51,7 +51,7 @@ bool getArgs(long unsigned int num, std::string raw_args, std::vector<std::strin
 
 // register number
 bool cmdRegister(std::string raw_args){
-    prInt.logln("inside cmdRegister()");
+    PrInt::logln("inside cmdRegister()");
     std::vector<std::string> args_vector;
     if (getArgs(2, raw_args, &args_vector) == false){
         return false;
@@ -64,7 +64,7 @@ bool cmdRegister(std::string raw_args){
 
 // unregister
 bool unregister(std::string raw_args){
-    prInt.logln("inside unregister()");
+    PrInt::logln("inside unregister()");
     if (getArgs(0, raw_args) == false){
         return false;
     }
@@ -73,7 +73,7 @@ bool unregister(std::string raw_args){
 }
 // setName name
 bool setName(std::string raw_args){
-    prInt.logln("inside setName()");
+    PrInt::logln("inside setName()");
     std::vector<std::string> args_vector;
     if (getArgs(1, raw_args, &args_vector) == false){
         return false;
@@ -85,7 +85,7 @@ bool setName(std::string raw_args){
 
 // call number
 bool call(std::string raw_args){
-    prInt.logln("inside call()");
+    PrInt::logln("inside call()");
 
     std::vector<std::string> args_vector;
     if (getArgs(1, raw_args, &args_vector) == false){
@@ -96,14 +96,14 @@ bool call(std::string raw_args){
         return false;
     }
 
-    prInt.println("the number is called");
+    PrInt::println("the number is called");
 
     return true;
 }
 
 // callEnd
 bool callEnd(std::string raw_args){
-    prInt.logln("inside callEnd()");
+    PrInt::logln("inside callEnd()");
     if (getArgs(0, raw_args) == false){
         return false;
     }
@@ -112,14 +112,14 @@ bool callEnd(std::string raw_args){
         return false;
     }
 
-    prInt.println("the call is ended");
+    PrInt::println("the call is ended");
 
     return true;
 }
 
 // answer
 bool answer(std::string raw_args){
-    prInt.logln("inside answer()");
+    PrInt::logln("inside answer()");
     if (getArgs(0, raw_args) == false){
         return false;
     }
@@ -129,14 +129,14 @@ bool answer(std::string raw_args){
         return false;
     }
 
-    prInt.println("the call is answered");
+    PrInt::println("the call is answered");
 
     return true;
 }
 
 // reject
 bool reject(std::string raw_args){
-    prInt.logln("inside reject()");
+    PrInt::logln("inside reject()");
     if (getArgs(0, raw_args) == false){
         return false;
     }
@@ -145,7 +145,7 @@ bool reject(std::string raw_args){
         return false;
     }
 
-    prInt.println("the call is rejected");
+    PrInt::println("the call is rejected");
 
     return true;
 }
@@ -166,7 +166,7 @@ struct UserInterface{
 
             return mapFun(args);
         } else {
-            prInt.println("CMD not found");
+            PrInt::println("CMD not found");
             return false;
         }
     }
@@ -174,7 +174,7 @@ struct UserInterface{
 
 int main(){
 
-    prInt.setLog(true);
+    PrInt::setLog(true);
 
 
     UserInterface ui;
@@ -192,22 +192,24 @@ int main(){
     while (ex_flag){
         bool success_flag = false;
 
-        prInt.printInputPointer();
+        PrInt::printInputPointer();
         std::cin >> command;
         if (command == "exit") {
             ex_flag = false;
         } else if (command == "log") {
             std::cin >> command;
             if (command == "on"){
-                prInt.setLog(true);
+                PrInt::setLog(true);
+                PrInt::println("logs turned on");
             } else if (command == "off"){
-                prInt.setLog(false);
+                PrInt::setLog(false);
+                PrInt::println("logs turned off");
             }
         } else {
             getline(std::cin, args);
             success_flag = ui.searchAndCall(command, args);
             if (success_flag == false) {
-                prInt.println("CMD failed to execute");
+                PrInt::println("CMD failed to execute");
             }
         }
     }

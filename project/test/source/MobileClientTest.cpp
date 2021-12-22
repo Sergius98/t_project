@@ -3,7 +3,7 @@
 #include "MobileClient.hpp"
 #include "NetConfAgentMock.hpp"
 #include "StringInterface.hpp"
-extern StringInterface strInt;
+using stringInterface::StrInt;
 
 using testing::InSequence;
 using testing::DoAll;
@@ -22,46 +22,46 @@ const std::string routingName = "RoutingNamen";
 const std::string testingPathPatern = "/commutator:subscribers/subscriber[number='{}']{}";
 
 const std::string numberPath =
-    strInt.format(testingPathPatern,
-                  {testNumber, MobileCli::leafs.find(MobileCli::Leaf::number)->second});
+    StrInt::format(testingPathPatern,
+                  {testNumber, mobileClient::leafs.find(mobileClient::Leaf::number)->second});
 const std::string routingNumberPath =
-    strInt.format(testingPathPatern,
-                  {routingNumber, MobileCli::leafs.find(MobileCli::Leaf::number)->second});
+    StrInt::format(testingPathPatern,
+                  {routingNumber, mobileClient::leafs.find(mobileClient::Leaf::number)->second});
 
 const std::string incomingNumberPath =
-    strInt.format(testingPathPatern,
-                  {testNumber, MobileCli::leafs.find(MobileCli::Leaf::incomingNumber)->second});
+    StrInt::format(testingPathPatern,
+                  {testNumber, mobileClient::leafs.find(mobileClient::Leaf::incomingNumber)->second});
 const std::string routingIncomingNumberPath =
-    strInt.format(testingPathPatern,
-                  {routingNumber, MobileCli::leafs.find(MobileCli::Leaf::incomingNumber)->second});
+    StrInt::format(testingPathPatern,
+                  {routingNumber, mobileClient::leafs.find(mobileClient::Leaf::incomingNumber)->second});
 
 std::string namePath = 
-    strInt.format(testingPathPatern, 
-                  {testNumber, MobileCli::leafs.find(MobileCli::Leaf::userName)->second});
+    StrInt::format(testingPathPatern, 
+                  {testNumber, mobileClient::leafs.find(mobileClient::Leaf::userName)->second});
 std::string routingNamePath = 
-    strInt.format(testingPathPatern,  
-                  {routingNumber, MobileCli::leafs.find(MobileCli::Leaf::userName)->second});
+    StrInt::format(testingPathPatern,  
+                  {routingNumber, mobileClient::leafs.find(mobileClient::Leaf::userName)->second});
 
 const std::string subscribePath = 
-    strInt.format(testingPathPatern,  
-                  {testNumber, MobileCli::leafs.find(MobileCli::Leaf::none)->second});
+    StrInt::format(testingPathPatern,  
+                  {testNumber, mobileClient::leafs.find(mobileClient::Leaf::none)->second});
 const std::string routingSubscribePath = 
-    strInt.format(testingPathPatern,  
-                  {routingNumber, MobileCli::leafs.find(MobileCli::Leaf::none)->second});
+    StrInt::format(testingPathPatern,  
+                  {routingNumber, mobileClient::leafs.find(mobileClient::Leaf::none)->second});
 
 const std::string statePath = 
-    strInt.format(testingPathPatern,  
-                  {testNumber, MobileCli::leafs.find(MobileCli::Leaf::state)->second});
+    StrInt::format(testingPathPatern,  
+                  {testNumber, mobileClient::leafs.find(mobileClient::Leaf::state)->second});
 const std::string routingStatePath = 
-    strInt.format(testingPathPatern,  
-                  {routingNumber, MobileCli::leafs.find(MobileCli::Leaf::state)->second});
+    StrInt::format(testingPathPatern,  
+                  {routingNumber, mobileClient::leafs.find(mobileClient::Leaf::state)->second});
 
-const std::string idleState = MobileCli::states.find(MobileCli::State::idle)->second;
-const std::string idleRegState = MobileCli::states.find(MobileCli::State::idleReg)->second;
-const std::string activeState = MobileCli::states.find(MobileCli::State::active)->second;
+const std::string idleState = mobileClient::states.find(mobileClient::State::idle)->second;
+const std::string idleRegState = mobileClient::states.find(mobileClient::State::idleReg)->second;
+const std::string activeState = mobileClient::states.find(mobileClient::State::active)->second;
 const std::string activeIncomingState = 
-    MobileCli::states.find(MobileCli::State::activeIncoming)->second;
-const std::string busyState = MobileCli::states.find(MobileCli::State::busy)->second;
+    mobileClient::states.find(mobileClient::State::activeIncoming)->second;
+const std::string busyState = mobileClient::states.find(mobileClient::State::busy)->second;
 
 
 class MobileClientTest: public testing::Test{
@@ -71,9 +71,9 @@ class MobileClientTest: public testing::Test{
         EXPECT_CALL(*_mockAgent, fetchData(numberPath, _)).WillOnce(Return(false));
         EXPECT_CALL(*_mockAgent, changeData(numberPath, testNumber)).WillOnce(Return(true));
         EXPECT_CALL(*_mockAgent, 
-                    subscribeForModelChanges(subscribePath, MobileCli::moduleName, _)
+                    subscribeForModelChanges(subscribePath, mobileClient::moduleName, _)
                    ).WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, registerOperData(namePath, MobileCli::moduleName, _)).Times(1);
+        EXPECT_CALL(*_mockAgent, registerOperData(namePath, mobileClient::moduleName, _)).Times(1);
     }
 
     void expectCallsUnregister(){
@@ -136,7 +136,7 @@ class MobileClientTest: public testing::Test{
     void SetUp() override{
         auto tempMock = std::make_unique<testing::StrictMock<mock::NetConfAgentMock>>();
         _mockAgent = tempMock.get();
-        _client = std::make_unique<MobileCli::MobileClient>(std::move(tempMock));
+        _client = std::make_unique<mobileClient::MobileClient>(std::move(tempMock));
     }
 
     void TearDown() override{
@@ -144,7 +144,7 @@ class MobileClientTest: public testing::Test{
     }
 
     testing::StrictMock <mock::NetConfAgentMock> *_mockAgent;
-    std::unique_ptr<MobileCli::MobileClient> _client;
+    std::unique_ptr<mobileClient::MobileClient> _client;
 };
 
 TEST_F(MobileClientTest, SetNameAndHandleOperData){

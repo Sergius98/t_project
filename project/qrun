@@ -4,4 +4,4 @@
 set -x
 
 ninja -C builddir/
-sudo ./builddir/ne_client
+sudo gnome-terminal --  bash -c "echo ne_client; sudo ./builddir/ne_client"

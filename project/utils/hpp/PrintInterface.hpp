@@ -5,33 +5,35 @@
 #include <iostream>
 #include <list>
 
+namespace printInterface{
 
 class PrintInterface{
     public:
-        static PrintInterface getDefault();
-        
-        void printInputPointer();
-        void logInputPointer();
-        void flushOutput();
-        void flushLog();
-        void println(std::string str);
-        void println(std::list<std::string> lst);
-        void logln(std::string str);
-        void logln(std::list<std::string> lst);
-        void print(std::string str);
-        void print(std::list<std::string> lst);
-        void log(std::string str);
-        void log(std::list<std::string> lst);
-        void setLog(bool logging);
-        void setInputPointer(std::string inputPointer);
-        void changeOutput(std::ostream *outStream);
-        void changeLogOutput(std::ostream *logStream);
+        static void printInputPointer();
+        static void logInputPointer();
+        static void flushOutput();
+        static void flushLog();
+        static void println(std::string str);
+        static void println(std::list<std::string> lst);
+        static void logln(std::string str);
+        static void logln(std::list<std::string> lst);
+        static void print(std::string str);
+        static void print(std::list<std::string> lst);
+        static void log(std::string str);
+        static void log(std::list<std::string> lst);
+        static void setLog(bool logging);
+        static void setInputPointer(std::string inputPointer);
+        static void changeOutput(std::ostream *outStream);
+        static void changeLogOutput(std::ostream *logStream);
     private:
-        bool _logging=true;
-        std::string _inputPointer = ">";
-        std::ostream *_outStream = &std::cout;
-        std::ostream *_logStream = &std::cout;
-        void flush(std::ostream *stream);
-        void send(std::string str, std::ostream *stream);
+        static bool _logging;
+        static std::string _inputPointer;
+        static std::ostream *_outStream;
+        static std::ostream *_logStream;
+        static void flush(std::ostream *stream);
+        static void send(std::string str, std::ostream *stream);
 };
+
+using PrInt = PrintInterface;
+}
 #endif

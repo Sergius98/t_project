@@ -1,7 +1,7 @@
 #include "MobileClient.hpp"
 #include "NetConfAgent.hpp"
 
-namespace MobileCli{
+namespace mobileClient{
 
 
 MobileClient::MobileClient(): 
@@ -58,9 +58,9 @@ bool MobileClient::reg(const std::string &number) {
             _state = State::idleReg;
             return true;
         }
-        prInt.println({"Number ",number," is already taken"});
+        PrInt::println({"Number ",number," is already taken"});
     } else {
-        prInt.println("You are already registered");
+        PrInt::println("You are already registered");
     }
     return false;
 }
@@ -74,7 +74,7 @@ bool MobileClient::unReg() {
         _state = State::idle;
         return true;
     } else {
-        prInt.println("You are not idle or not registered");
+        PrInt::println("You are not idle or not registered");
     }
     return false;
 }
@@ -98,20 +98,20 @@ bool MobileClient::call(const std::string &destination_number) {
                     _agent->changeData(destinationIncomingNumberPath, _number);
 
                     _agent->fetchData(makePath(_routingNumber, Leaf::userName), routingName);
-                    prInt.println({"\nyou have called ", routingName});
+                    PrInt::println({"\nyou have called ", routingName});
                     return true;
                 } else {
-                    prInt.println("the destination is not idle");
+                    PrInt::println("the destination is not idle");
                 }
             } else {
-                prInt.println("the number requested does not exist");
+                PrInt::println("the number requested does not exist");
             }
         } else {
-            prInt.println({"you need to be idle and registered, but your state is: ", 
+            PrInt::println({"you need to be idle and registered, but your state is: ", 
                            states.find(_state)->second});
         }
     } else {
-        prInt.println("you can't call yourself");
+        PrInt::println("you can't call yourself");
     }
     return false;
 }
@@ -127,7 +127,7 @@ bool MobileClient::answer() {
         _state = State::busy;
         return true;
     } else {
-        prInt.println({"you don't have an incoming call, but your state is: ", 
+        PrInt::println({"you don't have an incoming call, but your state is: ", 
                        states.find(_state)->second});
     }
     return false;
@@ -147,7 +147,7 @@ bool MobileClient::reject() {
         _routingNumber = "";
         return true;
     } else {
-        prInt.println({"you don't have an incoming call, but your state is: ", 
+        PrInt::println({"you don't have an incoming call, but your state is: ", 
                        states.find(_state)->second});
     }
     return false;
@@ -173,17 +173,17 @@ bool MobileClient::endCall() {
             _routingNumber = "";
             return true;
         } else {
-            prInt.println("you don't have an ongoing call, but your state is busy");
+            PrInt::println("you don't have an ongoing call, but your state is busy");
         }
     } else {
-        prInt.println({"you need to be busy to end a call, but your state is: ", 
+        PrInt::println({"you need to be busy to end a call, but your state is: ", 
                        states.find(_state)->second});
     }
     return false;
 }
 
 std::string MobileClient::makePath(const std::string &key, Leaf leaf) {
-    return strInt.format(leafPathPattern, 
+    return StrInt::format(leafPathPattern, 
                          {moduleName, containerPath, keyName, key, leafs.find(leaf)->second});
 }
 
@@ -194,22 +194,22 @@ void MobileClient::handleModuleChange(const std::string &path, const std::string
     const std::string activeState = states.find(State::active)->second;
     const std::string busyState = states.find(State::busy)->second;
     
-    prInt.logln({"handle: ",path ," -> ", value});
+    PrInt::logln({"handle: ",path ," -> ", value});
 
     if (path == statePath){
         if (value == idleState){
             _state = State::idleReg;
-            prInt.println("idle...");
+            PrInt::println("idle...");
         } else if (value == activeState){
             if (_state != State::activeIncoming){
                 _state = State::active;
             }
-            prInt.println("active...");
+            PrInt::println("active...");
         } else if (value == busyState){
             _state = State::busy;
-            prInt.println("busy...");
+            PrInt::println("busy...");
         } else {
-            prInt.println({"unexpected state value: ", value});
+            PrInt::println({"unexpected state value: ", value});
         }
     } else if (path == incomingNumberPath){
         if (value != ""){
@@ -217,20 +217,20 @@ void MobileClient::handleModuleChange(const std::string &path, const std::string
             _state = State::activeIncoming;
             std::string incomingName = "";
             _agent->fetchData(makePath(_routingNumber, Leaf::userName), incomingName);
-            prInt.println({"you have an incloming call from user ", 
+            PrInt::println({"you have an incloming call from user ", 
                            incomingName, 
                            " with number ", 
                            _routingNumber});
         } else {
             _routingNumber = "";
-            prInt.logln("incomingNumber value is made empty");
+            PrInt::logln("incomingNumber value is made empty");
         }
 
     } else {
-        prInt.logln({"unexpected path", path});
+        PrInt::logln({"unexpected path", path});
     }
 
-    prInt.logln("exit handleModuleChange");
+    PrInt::logln("exit handleModuleChange");
 }
 
 }

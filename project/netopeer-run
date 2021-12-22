@@ -1,0 +1,8 @@
+#!/bin/bash
+#chmod +x ./netopeer-run
+set -x
+pkill netopeer2-cli
+pkill -f "netopeer2-server"
+sudo rm -rf /dev/shm/sr_* /dev/shm/srsub_*
+gnome-terminal -- bash -c "echo netopeer2-server; sudo netopeer2-server -d -v4"
+gnome-terminal -- bash -c "echo netopeer2-cli; netopeer2-cli"
