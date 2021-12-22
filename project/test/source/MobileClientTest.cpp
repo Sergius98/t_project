@@ -82,10 +82,14 @@ class MobileClientTest: public testing::Test{
     }
 
     void expectCallsCall(){
-        EXPECT_CALL(*_mockAgent, fetchData(routingStatePath, _)).WillOnce(DoAll(SetArgReferee<1>(idleState), Return(true)));
-        EXPECT_CALL(*_mockAgent, changeData(statePath, activeState)).WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, changeData(routingIncomingNumberPath, testNumber)).WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, fetchData(routingNamePath, _)).WillOnce(DoAll(SetArgReferee<1>(routingName), Return(true)));
+        EXPECT_CALL(*_mockAgent, fetchData(routingStatePath, _)).
+            WillOnce(DoAll(SetArgReferee<1>(idleState), Return(true)));
+        EXPECT_CALL(*_mockAgent, changeData(statePath, activeState)).
+            WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, changeData(routingIncomingNumberPath, testNumber)).
+            WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, fetchData(routingNamePath, _)).
+            WillOnce(DoAll(SetArgReferee<1>(routingName), Return(true)));
     }
 
     void expectCallsEndCall(){
