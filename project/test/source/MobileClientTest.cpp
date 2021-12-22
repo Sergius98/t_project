@@ -35,10 +35,10 @@ const std::string routingIncomingNumberPath =
     StrInt::format(testingPathPatern,
                   {routingNumber, mobileClient::leafs.find(mobileClient::Leaf::incomingNumber)->second});
 
-std::string namePath = 
+const std::string namePath = 
     StrInt::format(testingPathPatern, 
                   {testNumber, mobileClient::leafs.find(mobileClient::Leaf::userName)->second});
-std::string routingNamePath = 
+const std::string routingNamePath = 
     StrInt::format(testingPathPatern,  
                   {routingNumber, mobileClient::leafs.find(mobileClient::Leaf::userName)->second});
 
