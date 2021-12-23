@@ -86,6 +86,8 @@ class MobileClientTest: public testing::Test{
     void expectCallsCall(){
         EXPECT_CALL(*_mockAgent, fetchData(ROUTING_STATE_PATH, _)).
             WillOnce(DoAll(SetArgReferee<1>(IDLE_STATE), Return(true)));
+        EXPECT_CALL(*_mockAgent, changeData(ROUTING_STATE_PATH, ACTIVE_STATE)).
+            WillOnce(Return(true));
         EXPECT_CALL(*_mockAgent, changeData(STATE_PATH, ACTIVE_STATE)).
             WillOnce(Return(true));
         EXPECT_CALL(*_mockAgent, changeData(ROUTING_INCOMING_NUMBER_PATH, TEST_NUMBER)).

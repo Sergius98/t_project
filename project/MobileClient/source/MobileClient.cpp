@@ -92,9 +92,11 @@ bool MobileClient::call(const std::string &destination_number) {
                                        states.find(State::active)->second);
                     _agent->changeData(makePath(destination_number, Leaf::incomingNumber), 
                                        _number);
+                    _agent->changeData(makePath(destination_number, Leaf::state), 
+                                       states.find(State::active)->second);
 
                     _agent->fetchData(makePath(_routingNumber, Leaf::userName), routingName);
-                    PrInt::println({"you have called ", routingName});
+                    PrInt::println({"\nyou have called ", routingName});
                     return true;
                 } else {
                     PrInt::println("the destination is not idle");
