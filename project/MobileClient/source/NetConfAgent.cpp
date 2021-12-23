@@ -1,5 +1,6 @@
 #include "NetConfAgent.hpp"
 #include "MobileClient.hpp"
+#include <sysrepo-cpp/utils/exception.hpp>
 
 
 namespace mobileClient{
@@ -116,8 +117,14 @@ bool NetConfAgent::fetchData(const std::string &path, std::string &data_str){
 }
 
 bool NetConfAgent::changeData(const std::string &path, const std::string &value) {
-    _sess->setItem(path.c_str(), value.c_str());
-    _sess->applyChanges();
+    try{
+        _sess->setItem(path.c_str(), value.c_str());
+        _sess->applyChanges();
+    } catch (sysrepo::Error &er){
+        PrInt::println({"couldn't change data on path ", path, " with value ", value});
+        PrInt::logln(er.what());
+        return false;
+    }
     return true;
 }
 

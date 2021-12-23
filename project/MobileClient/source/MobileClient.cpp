@@ -51,12 +51,14 @@ bool MobileClient::reg(const std::string &number) {
     if (_state==State::idle){
         if (!(_agent->fetchData(path, empty))){
             _number = number;
-            _agent->changeData(path, _number);
-            _agent->subscribeForModelChanges(makePath(_number, Leaf::none), moduleName, this);
-            _namePath = makePath(_number, Leaf::userName);
-            _agent->registerOperData(_namePath, moduleName, this);
-            _state = State::idleReg;
-            return true;
+            if (_agent->changeData(path, _number)){
+                _agent->subscribeForModelChanges(makePath(_number, Leaf::none), moduleName, this);
+                _namePath = makePath(_number, Leaf::userName);
+                _agent->registerOperData(_namePath, moduleName, this);
+                _state = State::idleReg;
+                return true;
+            }
+            PrInt::println({"Number ",_number," is not acceptable"});
         }
         PrInt::println({"Number ",number," is already taken"});
     } else {

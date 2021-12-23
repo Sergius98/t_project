@@ -169,6 +169,11 @@ TEST_F(MobileClientTest, RegisterFalseNumberIsTaken){
     EXPECT_CALL(*_mockAgent, fetchData(numberPath, _)).WillOnce(Return(true));
     EXPECT_FALSE(_client->reg(testNumber));
 }
+TEST_F(MobileClientTest, RegisterFalseNumberIsNotAcceptable){
+    EXPECT_CALL(*_mockAgent, fetchData(numberPath, _)).WillOnce(Return(false));
+    EXPECT_CALL(*_mockAgent, changeData(numberPath, _)).WillOnce(Return(false));
+    EXPECT_FALSE(_client->reg(testNumber));
+}
 
 TEST_F(MobileClientTest, RegisterFalseStateIsNotIdle){
     _client->setName(testName);
