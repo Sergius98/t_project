@@ -134,6 +134,20 @@ bool NetConfAgent::deleteData(const std::string &path) {
     return true;
 }
 
+bool NetConfAgent::notifySysrepo(const std::string &path, const std::map<std::string, std::string> &data) {
+    try{
+        auto notification = _sess->getContext().newPath(path.c_str());
+        for (auto element : data){
+            notification.newPath(element.first.c_str(), element.second.c_str());
+        }
+        _sess->sendNotification(notification, sysrepo::Wait::Yes);
+    } catch (sysrepo::Error &er){
+        PrInt::println("couldn't notify sysrepo ");
+        PrInt::logln(er.what());
+        return false;
+    }
+    return true;
+}
 
 
 }

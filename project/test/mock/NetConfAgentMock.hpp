@@ -13,6 +13,7 @@ class NetConfAgentMock: public mobileClient::INetConfAgent{
         MOCK_METHOD1(deleteData, bool(const std::string &path));
         MOCK_METHOD3(registerOperData, void(const std::string &path, const std::string &modelName, mobileClient::MobileClient *mobileClient));
         MOCK_METHOD2(changeData, bool(const std::string &path, const std::string &value));
+        MOCK_METHOD2(notifySysrepo, bool(const std::string &path, const std::map<std::string, std::string> &data));
 };
 
 }

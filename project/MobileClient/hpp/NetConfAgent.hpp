@@ -5,6 +5,7 @@
 #include <atomic>
 #include <string>
 #include <iostream>
+#include <map>
 //#include <libyang-cpp/DataNode.hpp>
 //#include <libyang-cpp/utils/exception.hpp>
 #include <sysrepo-cpp/Connection.hpp>
@@ -66,6 +67,12 @@ class NetConfAgent: public INetConfAgent {
         * @return /true when successful, /false otherwise.
         */
         bool changeData(const std::string &path, const std::string &value);
+        /**
+        * @brief notify sysrepo with data
+        * @param[in] data set of strings to be send
+        * @return /true when successful, /false if sysrepo sends exception.
+        */
+        bool notifySysrepo(const std::string &path, const std::map<std::string, std::string> &data);
         ~NetConfAgent();
     private:
         std::unique_ptr<sysrepo::Connection> _conn;

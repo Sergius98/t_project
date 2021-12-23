@@ -5,10 +5,10 @@ namespace mobileClient{
 
 
 MobileClient::MobileClient(): 
-        MobileClient(std::make_unique<NetConfAgent>()) {}
+    MobileClient(std::make_unique<NetConfAgent>()) {}
         
 MobileClient::MobileClient(std::unique_ptr<INetConfAgent> agent): 
-        _agent{std::move(agent)} {}
+    _agent{std::move(agent)} {}
 
 MobileClient::~MobileClient() {
     if (_state == State::active){
@@ -126,7 +126,18 @@ bool MobileClient::answer() {
             
         _agent->changeData(destinationStatePath, busyState);
         _agent->changeData(sourceStatePath, busyState);
-        _state = State::busy;
+        //while (_state!=State::busy);
+
+        size_t waitTime = 0;
+        while (_state!=State::busy && waitTime < timeout){
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            waitTime += 100;
+        }
+        if (_state != State::busy){
+            PrInt::logln("couldn't notify because wait time runout before CallBack");
+        } else {
+            _agent->notifySysrepo(notificationPath, _notificationMap);
+        }
         return true;
     } else {
         PrInt::println({"you don't have an incoming call, but your state is: ", 
@@ -145,8 +156,7 @@ bool MobileClient::reject() {
         _agent->changeData(destinationStatePath, idleState);
         _agent->changeData(sourceIncomingNumberPath, "");
         _agent->changeData(sourceStatePath, idleState);
-        _state = State::idleReg;
-        _routingNumber = "";
+        //while (_state!=State::idleReg);
         return true;
     } else {
         PrInt::println({"you don't have an incoming call, but your state is: ", 
@@ -171,8 +181,21 @@ bool MobileClient::endCall() {
             _agent->changeData(sourceStatePath, idleState);
             _agent->changeData(destinatonIncomingNumber, "");
             _agent->changeData(sourceIncomingNumber, "");
-            _state = State::idleReg;
-            _routingNumber = "";
+
+            size_t waitTime = 0;
+            while (_state!=State::idleReg && waitTime < timeout){
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                waitTime += 100;
+            }
+            if (_state != State::idleReg){
+                PrInt::logln("couldn't notify because wait time runout before CallBack");
+            } else {
+                time_t endTime = std::time(nullptr);
+                size_t durationSec = std::lround(std::difftime(endTime, _startTime));
+                _notificationMap[duration] = StrInt::format(timeDurationString, 
+                                                            {durationSec/60, durationSec%60});
+                _agent->notifySysrepo(notificationPath, _notificationMap);
+            }
             return true;
         } else {
             PrInt::println("you don't have an ongoing call, but your state is busy");
@@ -208,6 +231,19 @@ void MobileClient::handleModuleChange(const std::string &path, const std::string
             }
             PrInt::println("active...");
         } else if (value == busyState){
+            if (_state == State::activeIncoming){
+                _startTime = std::time(nullptr);
+                _notificationMap[startTime] = std::asctime(std::localtime(&_startTime));
+                _notificationMap[abonentA] = _routingNumber;
+                _notificationMap[abonentB] = _number;
+                _notificationMap[duration] = "";
+            } else if (_state == State::active) {
+                _startTime = std::time(nullptr);
+                _notificationMap[startTime] = std::asctime(std::localtime(&_startTime));
+                _notificationMap[abonentA] = _number;
+                _notificationMap[abonentB] = _routingNumber;
+                _notificationMap[duration] = "";
+            }
             _state = State::busy;
             PrInt::println("busy...");
         } else {

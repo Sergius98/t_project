@@ -97,11 +97,13 @@ class MobileClientTest: public testing::Test{
         EXPECT_CALL(*_mockAgent, changeData(statePath, idleState)).WillOnce(Return(true));
         EXPECT_CALL(*_mockAgent, changeData(routingIncomingNumberPath, "")).WillOnce(Return(true));
         EXPECT_CALL(*_mockAgent, changeData(incomingNumberPath, "")).WillOnce(Return(true));
+        //EXPECT_CALL(*_mockAgent, notifySysrepo(_,_)).WillOnce(Return(true));
     }
 
     void expectCallsAnswer(){
         EXPECT_CALL(*_mockAgent, changeData(routingStatePath, busyState)).WillOnce(Return(true));
         EXPECT_CALL(*_mockAgent, changeData(statePath, busyState)).WillOnce(Return(true));
+        //EXPECT_CALL(*_mockAgent, notifySysrepo(_,_)).WillOnce(Return(true));
     }
 
     void expectCallsDestructorRegect(){
@@ -123,11 +125,13 @@ class MobileClientTest: public testing::Test{
 
     void expectCallsDestructorActiveIncoming(){
         expectCallsDestructorRegect();
+        _client->handleModuleChange(statePath, idleState);
         expectCallsDestructorIdleReg();
     }
 
     void expectCallsDestructorBusy(){
         expectCallsEndCall();
+        _client->handleModuleChange(statePath, idleState);
         expectCallsDestructorIdleReg();
     }
 

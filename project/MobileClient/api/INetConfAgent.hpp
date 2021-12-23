@@ -51,6 +51,12 @@ class INetConfAgent {
         * @return /true when successful, /false otherwise.
         */
         virtual bool changeData(const std::string &path, const std::string &value)=0;
+        /**
+        * @brief notify sysrepo with data
+        * @param[in] data set of strings to be send
+        * @return /true when successful, /false if sysrepo sends exception.
+        */
+        virtual bool notifySysrepo(const std::string &path, const std::map<std::string, std::string> &data)=0;
         virtual ~INetConfAgent()=default;
 };
 

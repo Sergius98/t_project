@@ -5,15 +5,19 @@
 #include <memory>
 #include <iostream>
 #include <string>
+#include <ctime>
+#include <cmath>
+#include <chrono>
+#include <thread>
 
 #include "INetConfAgent.hpp"
 //#include "NetConfAgent.hpp"
 
-//#include "PrintInterface.hpp"
-//#include "StringInterface.hpp"
+#include "PrintInterface.hpp"
+#include "StringInterface.hpp"
 
-//using stringInterface::StrInt;
-//using printInterface::PrInt;
+using stringInterface::StrInt;
+using printInterface::PrInt;
 
 namespace mobileClient{
 
@@ -21,6 +25,14 @@ const std::string moduleName = "commutator";
 const std::string containerPath = "subscribers/subscriber";
 const std::string keyName = "number";
 const std::string leafPathPattern = "/{}:{}[{}='{}']{}";
+
+const std::string startTime = "startTime";
+const std::string abonentA = "abonentA";
+const std::string abonentB = "abonentB";
+const std::string duration = "duration";
+const std::string notificationPath = "/commutator:connection";
+const std::string timeDurationString = "{} minutes, {} seconds";
+const size_t timeout = 1000;
 
 class NetConfAgent;
 
@@ -125,6 +137,12 @@ class MobileClient {
          */
         void handleModuleChange(const std::string &path, const std::string &value);
     private:
+        std::time_t _startTime;
+        std::map<std::string,std::string> _notificationMap = {{ startTime, "" },
+                                                              { abonentA, "" },
+                                                              { abonentB, "" },
+                                                              { duration, "" }
+                                                             };
         std::string _name = "";
         std::string _number = "";
         std::string _routingNumber = "";
