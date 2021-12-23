@@ -12,133 +12,128 @@ using testing::SetArgReferee;
 using testing::_;
 
 
-namespace test{
+namespace{
 
-const std::string testNumber = "010101";
-const std::string routingNumber = "232323";
-const std::string testName = "TestNamen";
-const std::string routingName = "RoutingNamen";
+const std::string TEST_NUMBER = "010101";
+const std::string ROUTING_NUMBER = "232323";
+const std::string TEST_NAME = "TEST_NAMEn";
+const std::string ROUTING_NAMEN = "ROUTING_NAMENn";
 
-const std::string testingPathPatern = "/commutator:subscribers/subscriber[number='{}']{}";
+const std::string TESTING_PATH_PATERN = "/commutator:subscribers/subscriber[number='{}']{}";
 
-const std::string numberPath =
-    StrInt::format(testingPathPatern,
-                  {testNumber, mobileClient::leafs.find(mobileClient::Leaf::number)->second});
-const std::string routingNumberPath =
-    StrInt::format(testingPathPatern,
-                  {routingNumber, mobileClient::leafs.find(mobileClient::Leaf::number)->second});
+const std::string NUMBER_PATH =
+    StrInt::format(TESTING_PATH_PATERN,
+                  {TEST_NUMBER, mobileClient::leafs.find(mobileClient::Leaf::number)->second});
+const std::string ROUTING_NUMBER_PATH =
+    StrInt::format(TESTING_PATH_PATERN,
+                  {ROUTING_NUMBER, mobileClient::leafs.find(mobileClient::Leaf::number)->second});
 
-const std::string incomingNumberPath =
-    StrInt::format(testingPathPatern,
-                  {testNumber, mobileClient::leafs.find(mobileClient::Leaf::incomingNumber)->second});
-const std::string routingIncomingNumberPath =
-    StrInt::format(testingPathPatern,
-                  {routingNumber, mobileClient::leafs.find(mobileClient::Leaf::incomingNumber)->second});
+const std::string INCOMING_NUMBER_PATH =
+    StrInt::format(TESTING_PATH_PATERN,
+                  {TEST_NUMBER, mobileClient::leafs.find(mobileClient::Leaf::incomingNumber)->second});
+const std::string ROUTING_INCOMING_NUMBER_PATH =
+    StrInt::format(TESTING_PATH_PATERN,
+                  {ROUTING_NUMBER, mobileClient::leafs.find(mobileClient::Leaf::incomingNumber)->second});
 
-const std::string namePath = 
-    StrInt::format(testingPathPatern, 
-                  {testNumber, mobileClient::leafs.find(mobileClient::Leaf::userName)->second});
-const std::string routingNamePath = 
-    StrInt::format(testingPathPatern,  
-                  {routingNumber, mobileClient::leafs.find(mobileClient::Leaf::userName)->second});
+const std::string NAME_PATH = 
+    StrInt::format(TESTING_PATH_PATERN, 
+                  {TEST_NUMBER, mobileClient::leafs.find(mobileClient::Leaf::userName)->second});
+const std::string ROUTING_NAME_PATH = 
+    StrInt::format(TESTING_PATH_PATERN,  
+                  {ROUTING_NUMBER, mobileClient::leafs.find(mobileClient::Leaf::userName)->second});
 
-const std::string subscribePath = 
-    StrInt::format(testingPathPatern,  
-                  {testNumber, mobileClient::leafs.find(mobileClient::Leaf::none)->second});
-const std::string routingSubscribePath = 
-    StrInt::format(testingPathPatern,  
-                  {routingNumber, mobileClient::leafs.find(mobileClient::Leaf::none)->second});
+const std::string SUBSCRIBE_PATH = 
+    StrInt::format(TESTING_PATH_PATERN,  
+                  {TEST_NUMBER, mobileClient::leafs.find(mobileClient::Leaf::none)->second});
+const std::string ROUTING_SUBSCRIBE_PATH = 
+    StrInt::format(TESTING_PATH_PATERN,  
+                  {ROUTING_NUMBER, mobileClient::leafs.find(mobileClient::Leaf::none)->second});
 
-const std::string statePath = 
-    StrInt::format(testingPathPatern,  
-                  {testNumber, mobileClient::leafs.find(mobileClient::Leaf::state)->second});
-const std::string routingStatePath = 
-    StrInt::format(testingPathPatern,  
-                  {routingNumber, mobileClient::leafs.find(mobileClient::Leaf::state)->second});
+const std::string STATE_PATH = 
+    StrInt::format(TESTING_PATH_PATERN,  
+                  {TEST_NUMBER, mobileClient::leafs.find(mobileClient::Leaf::state)->second});
+const std::string ROUTING_STATE_PATH = 
+    StrInt::format(TESTING_PATH_PATERN,  
+                  {ROUTING_NUMBER, mobileClient::leafs.find(mobileClient::Leaf::state)->second});
 
-const std::string idleState = mobileClient::states.find(mobileClient::State::idle)->second;
-const std::string idleRegState = mobileClient::states.find(mobileClient::State::idleReg)->second;
-const std::string activeState = mobileClient::states.find(mobileClient::State::active)->second;
-const std::string activeIncomingState = 
+const std::string IDLE_STATE = mobileClient::states.find(mobileClient::State::idle)->second;
+const std::string IDLE_REG_STATE = mobileClient::states.find(mobileClient::State::idleReg)->second;
+const std::string ACTIVE_STATE = mobileClient::states.find(mobileClient::State::active)->second;
+const std::string ACTIVE_INCOMING_STATE = 
     mobileClient::states.find(mobileClient::State::activeIncoming)->second;
-const std::string busyState = mobileClient::states.find(mobileClient::State::busy)->second;
+const std::string BUSY_STATE = mobileClient::states.find(mobileClient::State::busy)->second;
+}
 
+namespace test{
 
 class MobileClientTest: public testing::Test{
 
     protected:
     void expectCallsRegisterTrue(){
-        EXPECT_CALL(*_mockAgent, fetchData(numberPath, _)).WillOnce(Return(false));
-        EXPECT_CALL(*_mockAgent, changeData(numberPath, testNumber)).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, fetchData(NUMBER_PATH, _)).WillOnce(Return(false));
+        EXPECT_CALL(*_mockAgent, changeData(NUMBER_PATH, TEST_NUMBER)).WillOnce(Return(true));
         EXPECT_CALL(*_mockAgent, 
-                    subscribeForModelChanges(subscribePath, mobileClient::moduleName, _)
+                    subscribeForModelChanges(SUBSCRIBE_PATH, mobileClient::MODULE_NAME, _)
                    ).WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, registerOperData(namePath, mobileClient::moduleName, _)).Times(1);
+        EXPECT_CALL(*_mockAgent, registerOperData(NAME_PATH, mobileClient::MODULE_NAME, _)).Times(1);
     }
 
     void expectCallsUnregister(){
         EXPECT_CALL(*_mockAgent, closeSysrepo()).Times(1);
-        EXPECT_CALL(*_mockAgent, deleteData(subscribePath)).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, deleteData(SUBSCRIBE_PATH)).WillOnce(Return(true));
     }
 
     void expectCallsCall(){
-        EXPECT_CALL(*_mockAgent, fetchData(routingStatePath, _)).
-            WillOnce(DoAll(SetArgReferee<1>(idleState), Return(true)));
-        EXPECT_CALL(*_mockAgent, changeData(statePath, activeState)).
+        EXPECT_CALL(*_mockAgent, fetchData(ROUTING_STATE_PATH, _)).
+            WillOnce(DoAll(SetArgReferee<1>(IDLE_STATE), Return(true)));
+        EXPECT_CALL(*_mockAgent, changeData(STATE_PATH, ACTIVE_STATE)).
             WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, changeData(routingIncomingNumberPath, testNumber)).
+        EXPECT_CALL(*_mockAgent, changeData(ROUTING_INCOMING_NUMBER_PATH, TEST_NUMBER)).
             WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, fetchData(routingNamePath, _)).
-            WillOnce(DoAll(SetArgReferee<1>(routingName), Return(true)));
+        EXPECT_CALL(*_mockAgent, fetchData(ROUTING_NAME_PATH, _)).
+            WillOnce(DoAll(SetArgReferee<1>(ROUTING_NAMEN), Return(true)));
     }
 
     void expectCallsEndCall(){
-        EXPECT_CALL(*_mockAgent, changeData(routingStatePath, idleState)).WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, changeData(statePath, idleState)).WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, changeData(routingIncomingNumberPath, "")).WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, changeData(incomingNumberPath, "")).WillOnce(Return(true));
-        //EXPECT_CALL(*_mockAgent, notifySysrepo(_,_)).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, changeData(ROUTING_STATE_PATH, IDLE_STATE)).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, changeData(STATE_PATH, IDLE_STATE)).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, changeData(ROUTING_INCOMING_NUMBER_PATH, "")).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, changeData(INCOMING_NUMBER_PATH, "")).WillOnce(Return(true));
     }
 
     void expectCallsAnswer(){
-        EXPECT_CALL(*_mockAgent, changeData(routingStatePath, busyState)).WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, changeData(statePath, busyState)).WillOnce(Return(true));
-        //EXPECT_CALL(*_mockAgent, notifySysrepo(_,_)).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, notifySysrepo(_,_)).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, changeData(ROUTING_STATE_PATH, BUSY_STATE)).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, changeData(STATE_PATH, BUSY_STATE)).WillOnce(Return(true));
     }
 
     void expectCallsDestructorRegect(){
-        EXPECT_CALL(*_mockAgent, changeData(routingStatePath, idleState)).WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, changeData(incomingNumberPath, "")).WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, changeData(statePath, idleState)).WillOnce(Return(true));
-    }
-
-    void expectCallsDestructorIdleReg(){
-        expectCallsUnregister();
+        EXPECT_CALL(*_mockAgent, changeData(ROUTING_STATE_PATH, IDLE_STATE)).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, changeData(INCOMING_NUMBER_PATH, "")).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, changeData(STATE_PATH, IDLE_STATE)).WillOnce(Return(true));
     }
 
     void expectCallsDestructorActive(){
-        EXPECT_CALL(*_mockAgent, changeData(routingIncomingNumberPath, "")).WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, changeData(routingStatePath, idleState)).WillOnce(Return(true));
-        EXPECT_CALL(*_mockAgent, changeData(statePath, idleState)).WillOnce(Return(true));
-        expectCallsDestructorIdleReg();
+        EXPECT_CALL(*_mockAgent, changeData(ROUTING_INCOMING_NUMBER_PATH, "")).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, changeData(ROUTING_STATE_PATH, IDLE_STATE)).WillOnce(Return(true));
+        EXPECT_CALL(*_mockAgent, changeData(STATE_PATH, IDLE_STATE)).WillOnce(Return(true));
+        expectCallsUnregister();
     }
 
     void expectCallsDestructorActiveIncoming(){
         expectCallsDestructorRegect();
-        _client->handleModuleChange(statePath, idleState);
-        expectCallsDestructorIdleReg();
+        expectCallsUnregister();
     }
 
     void expectCallsDestructorBusy(){
         expectCallsEndCall();
-        _client->handleModuleChange(statePath, idleState);
-        expectCallsDestructorIdleReg();
+        expectCallsUnregister();
     }
 
-    void mockIncomingCall(){
-        EXPECT_CALL(*_mockAgent, fetchData(routingNamePath, _)).
-            WillOnce(DoAll(SetArgReferee<1>(routingName), Return(true)));
-        _client->handleModuleChange(incomingNumberPath, routingNumber);
+    void incomingCall(){
+        EXPECT_CALL(*_mockAgent, fetchData(ROUTING_NAME_PATH, _)).
+            WillOnce(DoAll(SetArgReferee<1>(ROUTING_NAMEN), Return(true)));
+        _client->handleModuleChange(INCOMING_NUMBER_PATH, ROUTING_NUMBER);
     }
 
     void SetUp() override{
@@ -148,7 +143,7 @@ class MobileClientTest: public testing::Test{
     }
 
     void TearDown() override{
-        _client.reset();
+        _client->close();
     }
 
     testing::StrictMock <mock::NetConfAgentMock> *_mockAgent;
@@ -157,41 +152,41 @@ class MobileClientTest: public testing::Test{
 
 TEST_F(MobileClientTest, SetNameAndHandleOperData){
     std::string nameValue = "";
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     _client->handleOperData(nameValue);
-    ASSERT_EQ(testName, nameValue);
+    ASSERT_EQ(TEST_NAME, nameValue);
 }
 
 TEST_F(MobileClientTest, RegisterTrue){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
-    expectCallsDestructorIdleReg();
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
+    expectCallsUnregister();
 }
 
 TEST_F(MobileClientTest, RegisterFalseNumberIsTaken){
-    EXPECT_CALL(*_mockAgent, fetchData(numberPath, _)).WillOnce(Return(true));
-    EXPECT_FALSE(_client->reg(testNumber));
+    EXPECT_CALL(*_mockAgent, fetchData(NUMBER_PATH, _)).WillOnce(Return(true));
+    EXPECT_FALSE(_client->reg(TEST_NUMBER));
 }
 TEST_F(MobileClientTest, RegisterFalseNumberIsNotAcceptable){
-    EXPECT_CALL(*_mockAgent, fetchData(numberPath, _)).WillOnce(Return(false));
-    EXPECT_CALL(*_mockAgent, changeData(numberPath, _)).WillOnce(Return(false));
-    EXPECT_FALSE(_client->reg(testNumber));
+    EXPECT_CALL(*_mockAgent, fetchData(NUMBER_PATH, _)).WillOnce(Return(false));
+    EXPECT_CALL(*_mockAgent, changeData(NUMBER_PATH, TEST_NUMBER)).WillOnce(Return(false));
+    EXPECT_FALSE(_client->reg(TEST_NUMBER));
 }
 
 TEST_F(MobileClientTest, RegisterFalseStateIsNotIdle){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
-    EXPECT_FALSE(_client->reg(testNumber));
-    expectCallsDestructorIdleReg();
+    EXPECT_FALSE(_client->reg(TEST_NUMBER));
+    expectCallsUnregister();
 }
 
 TEST_F(MobileClientTest, UnRegisterTrue){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
     expectCallsUnregister();
     EXPECT_TRUE(_client->unReg());
@@ -202,80 +197,82 @@ TEST_F(MobileClientTest, UnRegisterFalseNotRegistered){
 }
 
 TEST_F(MobileClientTest, CallTrue){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
     expectCallsCall();
-    EXPECT_TRUE(_client->call(routingNumber));
+    EXPECT_TRUE(_client->call(ROUTING_NUMBER));
 
-    _client->handleModuleChange(statePath, activeState);
+    _client->handleModuleChange(STATE_PATH, ACTIVE_STATE);
     expectCallsDestructorActive();
 }
 
 TEST_F(MobileClientTest, CallFalseNotRegistered){
-    EXPECT_FALSE(_client->call(routingNumber));
+    EXPECT_FALSE(_client->call(ROUTING_NUMBER));
 }
 
 TEST_F(MobileClientTest, CallFalseNotIdle){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
-    mockIncomingCall();    
+    incomingCall();    
 
-    EXPECT_FALSE(_client->call(routingNumber));
+    EXPECT_FALSE(_client->call(ROUTING_NUMBER));
 
     expectCallsDestructorActiveIncoming();
 }
 
 TEST_F(MobileClientTest, CallFalseDestinationDoNotExist){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
-    EXPECT_CALL(*_mockAgent, fetchData(routingStatePath, _)).
+    EXPECT_CALL(*_mockAgent, fetchData(ROUTING_STATE_PATH, _)).
         WillOnce(DoAll(SetArgReferee<1>(""), Return(false)));
-    EXPECT_FALSE(_client->call(routingNumber));
+    EXPECT_FALSE(_client->call(ROUTING_NUMBER));
 
-    expectCallsDestructorIdleReg();
+    expectCallsUnregister();
 }
 
 TEST_F(MobileClientTest, CallFalseDestinationIsNotIdle){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
-    EXPECT_CALL(*_mockAgent, fetchData(routingStatePath, _)).
-        WillOnce(DoAll(SetArgReferee<1>(activeState), Return(true)));
-    EXPECT_FALSE(_client->call(routingNumber));
+    EXPECT_CALL(*_mockAgent, fetchData(ROUTING_STATE_PATH, _)).
+        WillOnce(DoAll(SetArgReferee<1>(ACTIVE_STATE), Return(true)));
+    EXPECT_FALSE(_client->call(ROUTING_NUMBER));
 
-    expectCallsDestructorIdleReg();
+    expectCallsUnregister();
 }
 
 TEST_F(MobileClientTest, AnswerTrue){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
-    mockIncomingCall();    
+    incomingCall();    
 
-    EXPECT_CALL(*_mockAgent, changeData(routingStatePath, busyState)).WillOnce(Return(true));
-    EXPECT_CALL(*_mockAgent, changeData(statePath, busyState)).WillOnce(Return(true));
+    EXPECT_CALL(*_mockAgent, notifySysrepo(_,_)).WillOnce(Return(true));
+    EXPECT_CALL(*_mockAgent, changeData(ROUTING_STATE_PATH, BUSY_STATE)).WillOnce(Return(true));
+    EXPECT_CALL(*_mockAgent, changeData(STATE_PATH, BUSY_STATE)).WillOnce(Return(true));
     EXPECT_TRUE(_client->answer());
-    _client->handleModuleChange(statePath, busyState);
+    _client->handleModuleChange(STATE_PATH, BUSY_STATE);
 
+    EXPECT_CALL(*_mockAgent, notifySysrepo(_,_)).WillOnce(Return(true));
     expectCallsDestructorBusy();
 }
 
 TEST_F(MobileClientTest, AnswerFalseStateIsNotActiveIncoming){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
     expectCallsCall();
-    EXPECT_TRUE(_client->call(routingNumber));
-    _client->handleModuleChange(statePath, activeState);
+    EXPECT_TRUE(_client->call(ROUTING_NUMBER));
+    _client->handleModuleChange(STATE_PATH, ACTIVE_STATE);
 
     EXPECT_FALSE(_client->answer());
 
@@ -283,29 +280,29 @@ TEST_F(MobileClientTest, AnswerFalseStateIsNotActiveIncoming){
 }
 
 TEST_F(MobileClientTest, RejectTrue){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
-    mockIncomingCall();    
+    incomingCall();    
 
-    EXPECT_CALL(*_mockAgent, changeData(routingStatePath, idleState)).WillOnce(Return(true));
-    EXPECT_CALL(*_mockAgent, changeData(incomingNumberPath, "")).WillOnce(Return(true));
-    EXPECT_CALL(*_mockAgent, changeData(statePath, idleState)).WillOnce(Return(true));
+    EXPECT_CALL(*_mockAgent, changeData(ROUTING_STATE_PATH, IDLE_STATE)).WillOnce(Return(true));
+    EXPECT_CALL(*_mockAgent, changeData(INCOMING_NUMBER_PATH, "")).WillOnce(Return(true));
+    EXPECT_CALL(*_mockAgent, changeData(STATE_PATH, IDLE_STATE)).WillOnce(Return(true));
     EXPECT_TRUE(_client->reject());
-    _client->handleModuleChange(statePath, idleState);
+    _client->handleModuleChange(STATE_PATH, IDLE_STATE);
 
-    expectCallsDestructorIdleReg();
+    expectCallsUnregister();
 }
 
 TEST_F(MobileClientTest, RejectFalseStateIsNotActiveIncoming){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
     expectCallsCall();
-    EXPECT_TRUE(_client->call(routingNumber));
-    _client->handleModuleChange(statePath, activeState);
+    EXPECT_TRUE(_client->call(ROUTING_NUMBER));
+    _client->handleModuleChange(STATE_PATH, ACTIVE_STATE);
 
     EXPECT_FALSE(_client->reject());
 
@@ -313,46 +310,47 @@ TEST_F(MobileClientTest, RejectFalseStateIsNotActiveIncoming){
 }
 
 TEST_F(MobileClientTest, endCallTrue){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
-    mockIncomingCall();    
+    incomingCall();    
 
     expectCallsAnswer();
     EXPECT_TRUE(_client->answer());
-    _client->handleModuleChange(statePath, busyState);
+    _client->handleModuleChange(STATE_PATH, BUSY_STATE);
 
 
+    EXPECT_CALL(*_mockAgent, notifySysrepo(_,_)).WillOnce(Return(true));
     expectCallsEndCall();
     EXPECT_TRUE(_client->endCall());
-    _client->handleModuleChange(statePath, idleState);
+    _client->handleModuleChange(STATE_PATH, IDLE_STATE);
 
-    expectCallsDestructorIdleReg();
+    expectCallsUnregister();
 }
 
 TEST_F(MobileClientTest, endCallFalseNotBusy){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
     EXPECT_FALSE(_client->endCall());
 
-    expectCallsDestructorIdleReg();
+    expectCallsUnregister();
 }
 
 TEST_F(MobileClientTest, endCallFalseNoNumber){
-    _client->setName(testName);
+    _client->setName(TEST_NAME);
     expectCallsRegisterTrue();
-    EXPECT_TRUE(_client->reg(testNumber));
+    EXPECT_TRUE(_client->reg(TEST_NUMBER));
 
-    _client->handleModuleChange(incomingNumberPath, "");
-    _client->handleModuleChange(statePath, busyState);
+    _client->handleModuleChange(INCOMING_NUMBER_PATH, "");
+    _client->handleModuleChange(STATE_PATH, BUSY_STATE);
 
     EXPECT_FALSE(_client->endCall());
 
-    _client->handleModuleChange(statePath, idleRegState);
-    expectCallsDestructorIdleReg();
+    _client->handleModuleChange(STATE_PATH, IDLE_REG_STATE);
+    expectCallsUnregister();
 }
 
 }

@@ -10,7 +10,7 @@ MobileClient::MobileClient():
 MobileClient::MobileClient(std::unique_ptr<INetConfAgent> agent): 
     _agent{std::move(agent)} {}
 
-MobileClient::~MobileClient() {
+void MobileClient::close() {
     if (_state == State::active){
         const std::string destinationStatePath = makePath(_routingNumber, Leaf::state);
         const std::string destinationIncomingNumberPath = makePath(_routingNumber, 
@@ -26,9 +26,11 @@ MobileClient::~MobileClient() {
     }
     if (_state == State::busy){
         endCall();
+        _state = State::idleReg;
     }
     if (_state == State::activeIncoming){
         reject();
+        _state = State::idleReg;
     }
     if (_state==State::idleReg){
         unReg();
@@ -52,9 +54,9 @@ bool MobileClient::reg(const std::string &number) {
         if (!(_agent->fetchData(path, empty))){
             _number = number;
             if (_agent->changeData(path, _number)){
-                _agent->subscribeForModelChanges(makePath(_number, Leaf::none), moduleName, this);
+                _agent->subscribeForModelChanges(makePath(_number, Leaf::none), MODULE_NAME, this);
                 _namePath = makePath(_number, Leaf::userName);
-                _agent->registerOperData(_namePath, moduleName, this);
+                _agent->registerOperData(_namePath, MODULE_NAME, this);
                 _state = State::idleReg;
                 return true;
             }
@@ -100,7 +102,7 @@ bool MobileClient::call(const std::string &destination_number) {
                     _agent->changeData(destinationIncomingNumberPath, _number);
 
                     _agent->fetchData(makePath(_routingNumber, Leaf::userName), routingName);
-                    PrInt::println({"\nyou have called ", routingName});
+                    PrInt::println({"you have called ", routingName});
                     return true;
                 } else {
                     PrInt::println("the destination is not idle");
@@ -124,23 +126,19 @@ bool MobileClient::answer() {
         const std::string destinationStatePath = makePath(_routingNumber, Leaf::state);
         const std::string busyState = states.find(State::busy)->second;
             
+        _startTime = std::time(nullptr);
+        _notificationMap[START_TIME] = std::asctime(std::localtime(&_startTime));
+        _notificationMap[ABONENT_A] = _routingNumber;
+        _notificationMap[ABONENT_B] = _number;
+        _notificationMap[DURATION] = "";
+        _agent->notifySysrepo(NOTIFICATION_PATH, _notificationMap);
+
         _agent->changeData(destinationStatePath, busyState);
         _agent->changeData(sourceStatePath, busyState);
-        //while (_state!=State::busy);
 
-        size_t waitTime = 0;
-        while (_state!=State::busy && waitTime < timeout){
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            waitTime += 100;
-        }
-        if (_state != State::busy){
-            PrInt::logln("couldn't notify because wait time runout before CallBack");
-        } else {
-            _agent->notifySysrepo(notificationPath, _notificationMap);
-        }
         return true;
     } else {
-        PrInt::println({"you don't have an incoming call, but your state is: ", 
+        PrInt::println({"\nyou don't have an incoming call, but your state is: ", 
                        states.find(_state)->second});
     }
     return false;
@@ -156,10 +154,9 @@ bool MobileClient::reject() {
         _agent->changeData(destinationStatePath, idleState);
         _agent->changeData(sourceIncomingNumberPath, "");
         _agent->changeData(sourceStatePath, idleState);
-        //while (_state!=State::idleReg);
         return true;
     } else {
-        PrInt::println({"you don't have an incoming call, but your state is: ", 
+        PrInt::println({"\nyou don't have an incoming call, but your state is: ", 
                        states.find(_state)->second});
     }
     return false;
@@ -167,7 +164,6 @@ bool MobileClient::reject() {
 
 
 bool MobileClient::endCall() {
-
     if (_state == State::busy){
         if (_routingNumber!=""){
             const std::string sourceStatePath = makePath(_number, Leaf::state);
@@ -177,25 +173,17 @@ bool MobileClient::endCall() {
                                                                   Leaf::incomingNumber);
             const std::string idleState = states.find(State::idle)->second;
             
+            time_t endTime = std::time(nullptr);
+            size_t durationSec = std::lround(std::difftime(endTime, _startTime));
+            _notificationMap[DURATION] = StrInt::format(TIME_DURATION_STRING, 
+                                                        {durationSec/60, durationSec%60});
+            _agent->notifySysrepo(NOTIFICATION_PATH, _notificationMap);
+
             _agent->changeData(destinationStatePath, idleState);
             _agent->changeData(sourceStatePath, idleState);
             _agent->changeData(destinatonIncomingNumber, "");
             _agent->changeData(sourceIncomingNumber, "");
 
-            size_t waitTime = 0;
-            while (_state!=State::idleReg && waitTime < timeout){
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                waitTime += 100;
-            }
-            if (_state != State::idleReg){
-                PrInt::logln("couldn't notify because wait time runout before CallBack");
-            } else {
-                time_t endTime = std::time(nullptr);
-                size_t durationSec = std::lround(std::difftime(endTime, _startTime));
-                _notificationMap[duration] = StrInt::format(timeDurationString, 
-                                                            {durationSec/60, durationSec%60});
-                _agent->notifySysrepo(notificationPath, _notificationMap);
-            }
             return true;
         } else {
             PrInt::println("you don't have an ongoing call, but your state is busy");
@@ -208,8 +196,8 @@ bool MobileClient::endCall() {
 }
 
 std::string MobileClient::makePath(const std::string &key, Leaf leaf) {
-    return StrInt::format(leafPathPattern, 
-                         {moduleName, containerPath, keyName, key, leafs.find(leaf)->second});
+    return StrInt::format(LEAF_PATH_PATTERN, 
+                         {MODULE_NAME, CONTAINER_PATH, KEY_NAME, key, leafs.find(leaf)->second});
 }
 
 void MobileClient::handleModuleChange(const std::string &path, const std::string &value){
@@ -231,18 +219,19 @@ void MobileClient::handleModuleChange(const std::string &path, const std::string
             }
             PrInt::println("active...");
         } else if (value == busyState){
+            _startTime = std::time(nullptr);
+            _notificationMap[START_TIME] = std::asctime(std::localtime(&_startTime));
+            _notificationMap[DURATION] = "";
             if (_state == State::activeIncoming){
-                _startTime = std::time(nullptr);
-                _notificationMap[startTime] = std::asctime(std::localtime(&_startTime));
-                _notificationMap[abonentA] = _routingNumber;
-                _notificationMap[abonentB] = _number;
-                _notificationMap[duration] = "";
+                _notificationMap[ABONENT_A] = _routingNumber;
+                _notificationMap[ABONENT_B] = _number;
             } else if (_state == State::active) {
-                _startTime = std::time(nullptr);
-                _notificationMap[startTime] = std::asctime(std::localtime(&_startTime));
-                _notificationMap[abonentA] = _number;
-                _notificationMap[abonentB] = _routingNumber;
-                _notificationMap[duration] = "";
+                _notificationMap[ABONENT_A] = _number;
+                _notificationMap[ABONENT_B] = _routingNumber;
+            } else {
+                PrInt::println({"unexpected state value: ", states.find(_state)->second});
+                _notificationMap[ABONENT_A] = "unknown";
+                _notificationMap[ABONENT_B] = "unknown";
             }
             _state = State::busy;
             PrInt::println("busy...");

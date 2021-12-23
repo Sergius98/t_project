@@ -21,18 +21,17 @@ using printInterface::PrInt;
 
 namespace mobileClient{
 
-const std::string moduleName = "commutator";
-const std::string containerPath = "subscribers/subscriber";
-const std::string keyName = "number";
-const std::string leafPathPattern = "/{}:{}[{}='{}']{}";
+const std::string MODULE_NAME = "commutator";
+const std::string CONTAINER_PATH = "subscribers/subscriber";
+const std::string KEY_NAME = "number";
+const std::string LEAF_PATH_PATTERN = "/{}:{}[{}='{}']{}";
 
-const std::string startTime = "startTime";
-const std::string abonentA = "abonentA";
-const std::string abonentB = "abonentB";
-const std::string duration = "duration";
-const std::string notificationPath = "/commutator:connection";
-const std::string timeDurationString = "{} minutes, {} seconds";
-const size_t timeout = 1000;
+const std::string START_TIME = "startTime";
+const std::string ABONENT_A = "abonentA";
+const std::string ABONENT_B = "abonentB";
+const std::string DURATION = "duration";
+const std::string NOTIFICATION_PATH = "/commutator:connection";
+const std::string TIME_DURATION_STRING = "{} minutes, {} seconds";
 
 class NetConfAgent;
 
@@ -73,7 +72,7 @@ class MobileClient {
     public:
         MobileClient();
         MobileClient(std::unique_ptr<INetConfAgent> agent);
-        ~MobileClient();
+        void close();
         /**
          * @brief Stores the name string to be used as operData.
          *
@@ -138,10 +137,10 @@ class MobileClient {
         void handleModuleChange(const std::string &path, const std::string &value);
     private:
         std::time_t _startTime;
-        std::map<std::string,std::string> _notificationMap = {{ startTime, "" },
-                                                              { abonentA, "" },
-                                                              { abonentB, "" },
-                                                              { duration, "" }
+        std::map<std::string,std::string> _notificationMap = {{ START_TIME, "" },
+                                                              { ABONENT_A, "" },
+                                                              { ABONENT_B, "" },
+                                                              { DURATION, "" }
                                                              };
         std::string _name = "";
         std::string _number = "";

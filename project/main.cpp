@@ -11,12 +11,12 @@
 
 #include "MobileClient.hpp"
 #include "NetConfAgent.hpp"
-//#include "PrintInterface.hpp"
-//#include "StringInterface.hpp"
+#include "PrintInterface.hpp"
+#include "StringInterface.hpp"
 
 
-//using stringInterface::StrInt;
-//using printInterface::PrInt;
+using stringInterface::StrInt;
+using printInterface::PrInt;
 
 mobileClient::MobileClient client;
 
@@ -57,7 +57,9 @@ bool cmdRegister(std::string raw_args){
         return false;
     }
     client.setName(args_vector[1]);
-    client.reg(args_vector[0]);
+    if(client.reg(args_vector[0])){
+        PrInt::println("\nyou are registered");
+    }
 
     return true;
 }
@@ -68,7 +70,9 @@ bool unregister(std::string raw_args){
     if (getArgs(0, raw_args) == false){
         return false;
     }
-    client.unReg();
+    if(client.unReg()){
+        PrInt::println("\nyou are unregistered");
+    }
     return true;
 }
 // setName name
@@ -79,6 +83,8 @@ bool setName(std::string raw_args){
         return false;
     }
     client.setName(args_vector[0]);
+
+    PrInt::println("\nthe name is set");
 
     return true;
 }
@@ -96,7 +102,7 @@ bool call(std::string raw_args){
         return false;
     }
 
-    PrInt::println("the number is called");
+    PrInt::println("\nthe number is called");
 
     return true;
 }
@@ -112,7 +118,7 @@ bool callEnd(std::string raw_args){
         return false;
     }
 
-    PrInt::println("the call is ended");
+    PrInt::println("\nthe call is ended");
 
     return true;
 }
@@ -129,7 +135,7 @@ bool answer(std::string raw_args){
         return false;
     }
 
-    PrInt::println("the call is answered");
+    PrInt::println("\nthe call is answered");
 
     return true;
 }
@@ -145,7 +151,7 @@ bool reject(std::string raw_args){
         return false;
     }
 
-    PrInt::println("the call is rejected");
+    PrInt::println("\nthe call is rejected");
 
     return true;
 }
@@ -186,6 +192,7 @@ int main(){
     ui.insert("answer", answer);
     ui.insert("reject", reject);
 
+    PrInt::setLog(false);
 
     bool ex_flag = true;
     std::string command, args;
@@ -196,6 +203,7 @@ int main(){
         std::cin >> command;
         if (command == "exit") {
             ex_flag = false;
+            client.close();
         } else if (command == "log") {
             std::cin >> command;
             if (command == "on"){
